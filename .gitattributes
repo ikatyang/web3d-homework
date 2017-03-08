@@ -5,3 +5,5 @@
 *.gif binary
 
 *.mp3 binary
+
+libraries linguist-vendored
