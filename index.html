@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Web3D Homework</title>
+    <link rel="stylesheet" href="resources/libraries/jquery/jquery.mobile.min.css">
+    <script src="resources/libraries/jquery/jquery.min.js"></script>
+    <script src="resources/libraries/jquery/jquery.lazyload.min.js"></script>
+    <script src="resources/libraries/jquery/jquery.mobile.min.js"></script>
+    <script>
+      $.mobile.ajaxEnabled = false;
+      $(function () {
+        $('img').lazyload();
+      });
+    </script>
+    <style>
+      .ui-block {
+        padding: 0.5em;
+      }
+      .ui-block .ui-btn {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      .ui-block .ui-body {
+        padding: 0;
+        overflow: hidden;
+      }
+      .ui-block .ui-body img {
+        width: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-role="page">
+      <div data-role="header">
+        <h1>Web3D Homework</h1>
+      </div>
+      <div data-role="content">
+        <div class="ui-grid-b ui-responsive">
+          <div class="ui-block ui-block-a"><a class="ui-btn ui-corner-all" href="homeworks/hw1/">Homework 1</a>
+            <div class="ui-body ui-body-a ui-corner-all"><img data-original="resources/demos/hw1.gif"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
