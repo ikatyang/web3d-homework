@@ -1,0 +1,39 @@
+language: node_js
+
+node_js:
+- '6'
+
+before_install:
+- git config --global user.name "$GIT_USER_NAME"
+- git config --global user.email "$GIT_USER_EMAIL"
+- git config --global push.default simple
+
+before_script:
+- git clone --depth=1 --branch=gh-pages "https://github.com/$TRAVIS_REPO_SLUG.git" ./gh-pages
+- rm -rf ./gh-pages/*
+
+script:
+- yarn run build-only
+- yarn run copy-resources
+
+after_success:
+- cd ./gh-pages
+- git add --all
+- git commit -m "Deploy to GitHub Pages by Travis $TRAVIS_COMMIT"
+- git push -qf "https://$GITHUB_ACCESS_TOKEN@github.com/$TRAVIS_REPO_SLUG.git"
+
+cache:
+  yarn: true
+  directories:
+  - node_modules
+
+os:
+- linux
+
+branches:
+  only:
+  - master
+
+env:
+  global:
+    secure: hiJZbs+TKQxJIZzakz/ecqc1K71ihsqaCC11VaaoHvK5PUmGH4Y9pv2XrKbj4YKKmSlEZ95zWk4mbXIT4xEB2Ry4fg69rQLeWsBEn7bpWMLl11fj+A066oC7Fyb2OVh3Itn4VCBiNuT4gNwt5HKHB3EEa/HJZRb0xtrR+KrZuBbadOgOpZJo0aJqYB52so7xG6+hRAItDrWdFKzR/+tdgt72FFYN4LjRRzfL+1V+PXRm/OXWlspko9u9OEPIt6bL5B4DUp39IRlhu8vB/+QVJpPtl98YkHEvkd04DwC+8/4zJKnDLaz/8Gtb36YlIzR0Az+xrInLj6bOnXm11uUXo55ENSgev5WtJz2yrPsNBPCgrgxgNTir3OW/8ZW+eCgBMTkLeLcXQEtglZDtuJB5K6NXKnLg3griMIZBOLun0Fjw7VknI23VVML8iOeV7DMBClq9WtrYFjQAw6ubHAxBzRiaMVYtDpf86t9AnctjfDXTfVw/WmZvTGWY3YH33p2CPdZOfKcyokOqXaPudR3l52d6S/kAWhG9/gXOiY0E3HDQ0OjQokf832ONDuRsAQn82j3iiZpY1nuvnxbKc4QlYXD1WC/H++TIOywEtzgVu8xxZtWlbcShyF85PHPkeSTN06fS057tUKlbLAMPOJkUjs7Ef+qp/3r6AhHWzVQv2Js=

@@ -1,0 +1,10 @@
+env:
+  browser: true
+
+globals:
+  THREE: false
+  camera: true
+  scene: true
+  renderer: true
+  init: true
+  animate: true

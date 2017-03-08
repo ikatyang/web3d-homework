@@ -1,0 +1,42 @@
+- const blockIds = ['a', 'b', 'c'];
+doctype html
+html
+  head
+    include ./templates/head.pug
+    link(rel='stylesheet' href=`${resources}/libraries/jquery/jquery.mobile.min.css`)
+    script(src=`${resources}/libraries/jquery/jquery.min.js`)
+    script(src=`${resources}/libraries/jquery/jquery.lazyload.min.js`)
+    script(src=`${resources}/libraries/jquery/jquery.mobile.min.js`)
+    script.
+      $.mobile.ajaxEnabled = false;
+      $(function () {
+        $('img').lazyload();
+      });
+    style.
+      .ui-block {
+        padding: 0.5em;
+      }
+      .ui-block .ui-btn {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      .ui-block .ui-body {
+        padding: 0;
+        overflow: hidden;
+      }
+      .ui-block .ui-body img {
+        width: 100%;
+        display: block;
+      }
+  body
+    div(data-role='page')
+      div(data-role='header')
+        h1=`${courseName} Homework`
+      div(data-role='content')
+        .ui-grid-b.ui-responsive
+          - for (let i = 0; i < homeworkIds.length; i++)
+            - const homeworkId = homeworkIds[i];
+            .ui-block(class=`ui-block-${blockIds[i % blockIds.length]}`)
+              a.ui-btn.ui-corner-all(href=`homeworks/hw${homeworkId}/`)=`Homework ${homeworkId}`
+              .ui-body.ui-body-a.ui-corner-all
+                img(data-original=`${resources}/demos/hw${homeworkId}.gif`)

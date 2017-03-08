@@ -1,0 +1,29 @@
+doctype html
+html
+  head
+    include ./head.pug
+    block threejs_import
+      script(src=`${resources}/libraries/threejs/three.min.js`)
+      script(src=`${resources}/libraries/threejs/OrbitControls.js`)
+    block head
+    block title_style
+      style.
+        .title {
+          position: absolute;
+          top: 0px;
+          width: 100%;
+          padding: 10px;
+          text-align: center;
+          color: yellow;
+        }
+    block threejs_style
+      style.
+        body {
+          margin: 0;
+          overflow: hidden;
+        }
+  body
+    block title_content
+      .title=`${courseAbbr}_HW${homeworkId}`
+    block body
+    script(src='bundle.js')

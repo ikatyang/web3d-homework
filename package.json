@@ -1,0 +1,32 @@
+{
+  "name": "web3d-homework",
+  "version": "0.0.0",
+  "author": "ikatyang",
+  "repository": "https://github.com/ikatyang/web3d-homework",
+  "license": "MIT",
+  "scripts": {
+    "lint": "node ./scripts/lint.js",
+    "prebuild": "rm -rf ./gh-pages",
+    "build": "npm run build-only",
+    "postbuild": "npm run copy-resources",
+    "build-only": "node ./scripts/build.js",
+    "preview": "cd ./gh-pages && python -m http.server",
+    "copy-resources": "cp -rf ./src/resources ./gh-pages/resources"
+  },
+  "devDependencies": {
+    "@types/glob": "5.0.30",
+    "@types/node": "7.0.5",
+    "@types/pug": "2.0.4",
+    "@types/three": "0.84.0",
+    "babel-core": "6.23.1",
+    "babel-preset-es2015": "6.22.0",
+    "babelify": "7.3.0",
+    "browserify": "14.1.0",
+    "eslint": "3.17.1",
+    "eslint-config-airbnb-base": "11.1.1",
+    "eslint-plugin-import": "2.2.0",
+    "glob": "7.1.1",
+    "pug": "2.0.0-beta11",
+    "pug-lint": "2.4.0"
+  }
+}
