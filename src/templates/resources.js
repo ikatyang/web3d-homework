@@ -1,1 +1,1 @@
-export default '../../resouces';
+export default '../../resources';
