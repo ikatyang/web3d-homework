@@ -6,4 +6,4 @@
 
 *.mp3 binary
 
-libraries/* linguist-vendored
+libraries/**/* linguist-vendored
