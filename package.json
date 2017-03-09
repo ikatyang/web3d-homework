@@ -14,6 +14,7 @@
     "copy-resources": "cp -rf ./src/resources ./gh-pages/resources"
   },
   "devDependencies": {
+    "@types/bootstrap": "3.3.32",
     "@types/glob": "5.0.30",
     "@types/jquery": "2.0.40",
     "@types/node": "7.0.5",

@@ -2,6 +2,12 @@
 # yarn lockfile v1
 
 
+"@types/bootstrap@3.3.32":
+  version "3.3.32"
+  resolved "https://registry.yarnpkg.com/@types/bootstrap/-/bootstrap-3.3.32.tgz#abaf4b364d086de0cb7791db0cfd55703b591fad"
+  dependencies:
+    "@types/jquery" "*"
+
 "@types/glob@5.0.30":
   version "5.0.30"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-5.0.30.tgz#1026409c5625a8689074602808d082b2867b8a51"
@@ -9,7 +15,7 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/jquery@2.0.40":
+"@types/jquery@*", "@types/jquery@2.0.40":
   version "2.0.40"
   resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.40.tgz#acdd69e29b74cdec15dc3c074bcb064bc1b87213"
 
