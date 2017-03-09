@@ -2,11 +2,10 @@ doctype html
 html
   head
     include ./head.pug
-    block threejs_import
-      script(src=`${resources}/libraries/threejs/three.min.js`)
-      script(src=`${resources}/libraries/threejs/OrbitControls.js`)
     block head
-    block title_style
+    block import
+      script(src=`${resources}/libraries/jquery/jquery.min.js`)
+    block style
       style.
         .title {
           position: absolute;
@@ -16,14 +15,7 @@ html
           text-align: center;
           color: yellow;
         }
-    block threejs_style
-      style.
-        body {
-          margin: 0;
-          overflow: hidden;
-        }
   body
-    block title_content
-      .title=`${courseAbbr}_HW${homeworkId}`
     block body
+      .title=`${courseAbbr}_HW${homeworkId}`
     script(src='bundle.js')

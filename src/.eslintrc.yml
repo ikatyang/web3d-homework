@@ -2,4 +2,5 @@ env:
   browser: true
 
 globals:
+  $: false
   THREE: false

@@ -2,12 +2,15 @@ import { scene, renderer, init as basicInit, animate as basicAnimate } from './t
 
 export { scene, renderer };
 
-export const camera =
-  new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-export const controls = new THREE.OrbitControls(camera, renderer.domElement);
+export const camera = new THREE.OrthographicCamera(
+  window.innerWidth / -2, window.innerWidth / 2,
+  window.innerHeight / 2, window.innerHeight / -2, -50, 1000);
 
 function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.left = window.innerWidth / -2;
+  camera.right = window.innerWidth / 2;
+  camera.top = window.innerHeight / 2;
+  camera.bottom = window.innerHeight / -2;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
