@@ -3,7 +3,7 @@ import { scene, renderer, init as basicInit, animate as basicAnimate } from './t
 export { scene, renderer };
 
 export const camera =
-  new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+  new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 export const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 function onWindowResize() {
