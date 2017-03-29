@@ -14,7 +14,10 @@ const outputDir = path.join(cwd, 'gh-pages');
 const indexFile = path.join(inputDir, 'index.pug');
 const resourcesDir = path.join(inputDir, 'resources');
 const homeworksDir = path.join(inputDir, 'homeworks');
-const homeworkNames = fs.readdirSync(homeworksDir);
+
+const specDir = process.argv.length > 2 && process.argv[2];
+const homeworkNames = (specDir && [specDir]) || fs.readdirSync(homeworksDir);
+
 const homeworkIds = homeworkNames.map(name => name.slice(2));
 const homeworkDirs = homeworkNames.map(name => path.join(homeworksDir, name));
 
@@ -47,9 +50,7 @@ homeworkDirs.forEach((homeworkDir, index) => {
   const homeworkOutputDir = homeworkDir.replace(inputDir, outputDir);
   checkDir(homeworkOutputDir);
 
-  console.log();
   console.log(`> build-es5: ${homeworkName}`);
-  console.log();
 
   execSync(`${bin}/browserify ${homeworkDir}/index.js -o ${homeworkOutputDir}/bundle.js -t [ babelify --presets [ es2015 ] ]`, {
     stdio: [process.stdin, process.stdout, process.stderr],
@@ -57,9 +58,7 @@ homeworkDirs.forEach((homeworkDir, index) => {
 });
 
 const compilePug = (name, pugFile, pugLocals = {}) => {
-  console.log();
   console.log(`> build-html: ${name}`);
-  console.log();
   fs.writeFileSync(
     pugFile.replace(inputDir, outputDir).replace(/\.pug$/, '.html'),
     pug.renderFile(pugFile, Object.assign({}, options, locals, pugLocals, {
@@ -67,7 +66,10 @@ const compilePug = (name, pugFile, pugLocals = {}) => {
     })));
 };
 
-compilePug('index', indexFile, { homeworkIds });
+if (!specDir) {
+  compilePug('index', indexFile, { homeworkIds });
+}
+
 homeworkDirs.forEach((homeworkDir, index) => {
   const pugFile = path.join(homeworkDir, 'index.pug');
   const homeworkId = homeworkIds[index];

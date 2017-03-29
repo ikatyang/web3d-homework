@@ -6,7 +6,7 @@ web3d homework
 
 ## Development
 
-require `Node.js@>=6`, `Python@3.x`
+require `Node.js@>=6`
 
 #### Setup
 
