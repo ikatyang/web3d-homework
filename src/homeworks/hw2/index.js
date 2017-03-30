@@ -2,15 +2,28 @@ import { camera, scene, init, animate } from '../../templates/three3D';
 import House from './House';
 import roomConfigs from './rooms';
 
-const speed = 80;
+const gcontrols = {
+  speed: 80,
+  blockedHeight: 10,
+};
+
 const clickDistance = 80;
-const blockedHeight = 10;
 const collisionDistance = 10;
+
 const origin = new THREE.Vector3(0, 40, -50);
 
 const clock = new THREE.Clock();
-const pointerRaycaster = new THREE.Raycaster(undefined, undefined, undefined, clickDistance);
-const collisionRaycaster = new THREE.Raycaster(undefined, undefined, undefined, collisionDistance);
+const pointerRaycaster = new THREE.Raycaster(
+  undefined, undefined, undefined, clickDistance);
+const collisionRaycaster = new THREE.Raycaster(
+  undefined, undefined, undefined, collisionDistance);
+
+const gui = new dat.GUI();
+gui.close();
+gui.add(gcontrols, 'speed', 0, 200);
+gui.add(gcontrols, 'blockedHeight', 0, 80);
+gui.add(pointerRaycaster, 'far', 0, 200).name('clickDistance');
+gui.add(collisionRaycaster, 'far', 0, 50).name('collisionDistance');
 
 let house;
 let intersects;
@@ -115,7 +128,7 @@ animate(() => {
 
     let blocked = false;
 
-    const collisionOrigin = pointerLockObject.position.clone().setY(blockedHeight);
+    const collisionOrigin = pointerLockObject.position.clone().setY(gcontrols.blockedHeight);
     const collisionDirection = pointerLockObject.localToWorld(direction.clone())
       .sub(pointerLockObject.localToWorld(new THREE.Vector3()))
       .normalize();
@@ -125,7 +138,7 @@ animate(() => {
     }
 
     if (!blocked) {
-      pointerLockObject.translateOnAxis(direction, speed * delta);
+      pointerLockObject.translateOnAxis(direction, gcontrols.speed * delta);
     }
 
     if (mouseEvent) {

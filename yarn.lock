@@ -8,6 +8,10 @@
   dependencies:
     "@types/jquery" "*"
 
+"@types/dat-gui@0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@types/dat-gui/-/dat-gui-0.6.2.tgz#99c899b4cb354a3a9bb3d13c2dc7c96a6b83574e"
+
 "@types/express-serve-static-core@*":
   version "4.0.44"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.44.tgz#a1c3bd5d80e93c72fba91a03f5412c47f21d4ae7"
