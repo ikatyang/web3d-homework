@@ -325,25 +325,28 @@ var Wall = function (_THREE$Object3D) {
     _this.add(container);
 
     if (!door) {
-      var mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshNormalMaterial({ side: side }));
+      var mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ side: side, color: Math.floor(Math.random() * 0xffffff) }));
       container.add(mesh);
     } else {
       var isNegative = doorPosition < 0 || 1 / doorPosition === -Infinity;
-      var doorDeltaX = door.width / -2 + (isNegative ? width + doorPosition : doorPosition);
-      var partitions = [[0, door.height, width, height - door.height], [0, 0, doorDeltaX, height], [doorDeltaX + door.width, 0, width - doorDeltaX - door.width, height]];
-      partitions.forEach(function (_ref) {
-        var _ref2 = _slicedToArray(_ref, 4),
-            left = _ref2[0],
-            bottom = _ref2[1],
-            partitionWidth = _ref2[2],
-            partitionHeight = _ref2[3];
 
-        if (partitionWidth > 0 && partitionHeight > 0) {
-          var _mesh = new THREE.Mesh(new THREE.PlaneGeometry(partitionWidth, partitionHeight), new THREE.MeshNormalMaterial({ side: side }));
-          _mesh.position.set(width / -2 + partitionWidth / 2 + left, height / -2 + partitionHeight / 2 + bottom, 0);
-          container.add(_mesh);
-        }
-      });
+      if (height > 0) {
+        var doorDeltaX = door.width / -2 + (isNegative ? width + doorPosition : doorPosition);
+        var partitions = [[0, door.height, width, height - door.height], [0, 0, doorDeltaX, door.height], [doorDeltaX + door.width, 0, width - doorDeltaX - door.width, door.height]];
+        partitions.forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 4),
+              left = _ref2[0],
+              bottom = _ref2[1],
+              partitionWidth = _ref2[2],
+              partitionHeight = _ref2[3];
+
+          if (partitionWidth > 0 && partitionHeight > 0) {
+            var _mesh = new THREE.Mesh(new THREE.PlaneGeometry(partitionWidth, partitionHeight), new THREE.MeshBasicMaterial({ side: side, color: Math.floor(Math.random() * 0xffffff) }));
+            _mesh.position.set(width / -2 + partitionWidth / 2 + left, height / -2 + partitionHeight / 2 + bottom, 0);
+            container.add(_mesh);
+          }
+        });
+      }
 
       if (holdDoor) {
         var doorPositionX = width / -2 + (isNegative ? width + doorPosition : doorPosition);
@@ -745,7 +748,7 @@ exports.default = {
     height: roomHeight,
     size: [bedRoomEast.width, bedRoomEast.depth],
     nextTo: ['toiletSouth', 'shaft'],
-    walls: [[new _Wall2.default(bedRoomEast.width - balconyEast.width, roomHeight, 'north', THREE.FrontSide), (bedRoomEast.width - balconyEast.width) / 2], [new _Wall2.default(balconyEast.width, roomHeight, 'north', THREE.DoubleSide, balconyEast.door, balconyEast.door.width / 2, false), balconyEast.width / -2], [new _Wall2.default(aisle.depth, roomHeight, 'west', THREE.DoubleSide, bedRoomEast.door, bedRoomEast.door.width / -2, true), aisle.depth / -2], [new _Wall2.default(bedRoomEast.depth - bedRoomEast.door.width, roomHeight, 'west', THREE.FrontSide), (bedRoomEast.depth - bedRoomEast.door.width) / 2], [new _Wall2.default(bedRoomEast.width, roomHeight, 'south', THREE.FrontSide, toiletSouthEast.door, toiletSouthEast.door.width / 2, false), bedRoomEast.width / 2], [new _Wall2.default(bedRoomEast.depth, roomHeight, 'east', THREE.DoubleSide), bedRoomEast.depth / 2]]
+    walls: [[new _Wall2.default(bedRoomEast.width - balconyEast.width, roomHeight, 'north', THREE.FrontSide), (bedRoomEast.width - balconyEast.width) / 2], [new _Wall2.default(balconyEast.width, roomHeight, 'north', THREE.DoubleSide, balconyEast.door, balconyEast.door.width / 2, false), balconyEast.width / -2], [new _Wall2.default(aisle.depth, roomHeight, 'west', THREE.DoubleSide, bedRoomEast.door, bedRoomEast.door.width / -2, true), aisle.depth / -2], [new _Wall2.default(bedRoomEast.depth - aisle.depth, roomHeight, 'west', THREE.FrontSide), (bedRoomEast.depth - aisle.depth) / 2], [new _Wall2.default(bedRoomEast.width, roomHeight, 'south', THREE.FrontSide, toiletSouthEast.door, toiletSouthEast.door.width / 2, false), bedRoomEast.width / 2], [new _Wall2.default(bedRoomEast.depth, roomHeight, 'east', THREE.DoubleSide), bedRoomEast.depth / 2]]
   },
   aisle: {
     height: roomHeight,
