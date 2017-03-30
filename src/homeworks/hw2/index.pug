@@ -5,25 +5,36 @@ append import
 
 append style
   style.
-    #blocker {
-      position: absolute;
-      background: rgba(0, 0, 0, 0.5);
-      width: 100%;
-      height: 100%;
-      text-align: center;
-      cursor: pointer;
-      color: #ffffff;
+    .center {
       display: flex;
       align-items: center;
       justify-content: center;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+
+    #blocker {
+      background: rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      color: #ffffff;
     }
 
     #instructions * {
       margin: 0;
     }
 
+    #pointer {
+      height: 40px;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+
 append body
-  #blocker
+  .center
+    img#pointer(src=`${resources}/images/cursor-pointer.png`)
+  #blocker.center
     #instructions
       h1='Click to Start'
       p='(W, A, S, D = Move, MOUSE = Look arround)'

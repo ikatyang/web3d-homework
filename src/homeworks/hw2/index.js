@@ -3,7 +3,7 @@ import House from './House';
 import roomConfigs from './rooms';
 
 const speed = 80;
-const clickDistance = 60;
+const clickDistance = 80;
 const origin = new THREE.Vector3(0, 40, -50);
 
 const clock = new THREE.Clock();
@@ -37,7 +37,7 @@ init(() => {
     mouseEvent = event;
   }, false);
   window.addEventListener('mousedown', () => {
-    if (intersects.length > 0) {
+    if (intersects && intersects.length > 0) {
       intersects[0].object.axis.toggle();
     }
   }, false);
@@ -113,5 +113,6 @@ animate(() => {
       ((mouseEvent.clientY / window.innerHeight) * -2) + 1,
     ), camera);
     intersects = raycaster.intersectObjects(house.doors);
+    document.getElementById('pointer').style.opacity = (intersects.length > 0) ? '1' : '0';
   }
 });
