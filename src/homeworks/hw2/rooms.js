@@ -193,7 +193,7 @@ export default {
       [new Wall(bedRoomEast.width - balconyEast.width, roomHeight, 'north', THREE.FrontSide), (bedRoomEast.width - balconyEast.width) / 2],
       [new Wall(balconyEast.width, roomHeight, 'north', THREE.DoubleSide, balconyEast.door, balconyEast.door.width / 2, false), balconyEast.width / -2],
       [new Wall(aisle.depth, roomHeight, 'west', THREE.DoubleSide, bedRoomEast.door, bedRoomEast.door.width / -2, true), aisle.depth / -2],
-      [new Wall(bedRoomEast.depth - bedRoomEast.door.width, roomHeight, 'west', THREE.FrontSide), (bedRoomEast.depth - bedRoomEast.door.width) / 2],
+      [new Wall(bedRoomEast.depth - aisle.depth, roomHeight, 'west', THREE.FrontSide), (bedRoomEast.depth - aisle.depth) / 2],
       [new Wall(bedRoomEast.width, roomHeight, 'south', THREE.FrontSide, toiletSouthEast.door, toiletSouthEast.door.width / 2, false), bedRoomEast.width / 2],
       [new Wall(bedRoomEast.depth, roomHeight, 'east', THREE.DoubleSide), bedRoomEast.depth / 2],
     ],

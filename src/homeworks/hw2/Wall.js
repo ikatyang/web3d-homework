@@ -27,27 +27,30 @@ export default class Wall extends THREE.Object3D {
     if (!door) {
       const mesh = new THREE.Mesh(
         new THREE.PlaneGeometry(width, height),
-        new THREE.MeshNormalMaterial({ side }));
+        new THREE.MeshBasicMaterial({ side, color: Math.floor(Math.random() * 0xffffff) }));
       container.add(mesh);
     } else {
       const isNegative = (doorPosition < 0 || 1 / doorPosition === -Infinity);
-      const doorDeltaX = (door.width / -2) + (isNegative ? width + doorPosition : doorPosition);
-      const partitions = [
-        [0, door.height, width, height - door.height],
-        [0, 0, doorDeltaX, height],
-        [doorDeltaX + door.width, 0, width - doorDeltaX - door.width, height],
-      ];
-      partitions.forEach(([left, bottom, partitionWidth, partitionHeight]) => {
-        if (partitionWidth > 0 && partitionHeight > 0) {
-          const mesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(partitionWidth, partitionHeight),
-            new THREE.MeshNormalMaterial({ side }));
-          mesh.position.set(
-            (width / -2) + (partitionWidth / 2) + left,
-            (height / -2) + (partitionHeight / 2) + bottom, 0);
-          container.add(mesh);
-        }
-      });
+
+      if (height > 0) {
+        const doorDeltaX = (door.width / -2) + (isNegative ? width + doorPosition : doorPosition);
+        const partitions = [
+          [0, door.height, width, height - door.height],
+          [0, 0, doorDeltaX, door.height],
+          [doorDeltaX + door.width, 0, width - doorDeltaX - door.width, door.height],
+        ];
+        partitions.forEach(([left, bottom, partitionWidth, partitionHeight]) => {
+          if (partitionWidth > 0 && partitionHeight > 0) {
+            const mesh = new THREE.Mesh(
+              new THREE.PlaneGeometry(partitionWidth, partitionHeight),
+              new THREE.MeshBasicMaterial({ side, color: Math.floor(Math.random() * 0xffffff) }));
+            mesh.position.set(
+              (width / -2) + (partitionWidth / 2) + left,
+              (height / -2) + (partitionHeight / 2) + bottom, 0);
+            container.add(mesh);
+          }
+        });
+      }
 
       if (holdDoor) {
         const doorPositionX = (width / -2) + (isNegative ? width + doorPosition : doorPosition);
