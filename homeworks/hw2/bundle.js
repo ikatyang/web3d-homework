@@ -381,20 +381,66 @@ var _rooms2 = _interopRequireDefault(_rooms);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var speed = 80;
+var gcontrols = {
+  speed: 80,
+  blockedHeight: 10,
+  controls: 'PointerLock'
+};
+
 var clickDistance = 80;
-var blockedHeight = 10;
 var collisionDistance = 10;
-var origin = new THREE.Vector3(0, 40, -50);
+
+var origin = new THREE.Vector3(0, 40, 300);
 
 var clock = new THREE.Clock();
 var pointerRaycaster = new THREE.Raycaster(undefined, undefined, undefined, clickDistance);
 var collisionRaycaster = new THREE.Raycaster(undefined, undefined, undefined, collisionDistance);
 
+var pointerLockCamera = _three3D.camera.clone();
+
+var gui = new dat.GUI();
+gui.close();
+gui.add(gcontrols, 'speed', 0, 200);
+gui.add(gcontrols, 'blockedHeight', 0, 80);
+gui.add(pointerRaycaster, 'far', 0, 200).name('clickDistance');
+gui.add(collisionRaycaster, 'far', 0, 50).name('collisionDistance');
+
+var onControlsChange = function onControlsChange(value) {
+  var blocker = document.getElementById('blocker');
+  var icons = document.getElementById('cursor-icons');
+  if (value === 'Orbit') {
+    document.exitPointerLock();
+    blocker.style.display = 'none';
+    icons.style.display = 'none';
+  } else {
+    blocker.style.display = '';
+    icons.style.display = '';
+  }
+};
+
+var controlsController = gui.add(gcontrols, 'controls', ['Orbit', 'PointerLock']).onChange(onControlsChange);
+
+var setViewport = function setViewport(position) {
+  return function () {
+    gcontrols.controls = 'Orbit';
+    onControlsChange(gcontrols.controls);
+    controlsController.updateDisplay();
+    _three3D.camera.position.copy(position);
+  };
+};
+
+var viewports = [new THREE.Vector3(0, 300, 600), new THREE.Vector3(-300, 300, -300), new THREE.Vector3(300, 300, -300)];
+viewports.forEach(function (viewport, index) {
+  var viewportName = 'setViewport' + (index + 1);
+  gcontrols[viewportName] = setViewport(viewport);
+  gui.add(gcontrols, viewportName);
+});
+
 var house = void 0;
 var intersects = void 0;
 var pointerLockControls = void 0;
 var mouseEvent = void 0;
+var isFirst = true;
 
 var pressed = {
   w: false,
@@ -404,7 +450,10 @@ var pressed = {
 };
 
 (0, _three3D.init)(function () {
-  pointerLockControls = new THREE.PointerLockControls(_three3D.camera);
+  _three3D.camera.position.set(0, 300, 600);
+  _three3D.scene.add(_three3D.camera);
+
+  pointerLockControls = new THREE.PointerLockControls(pointerLockCamera);
   pointerLockControls.getObject().position.copy(origin);
   _three3D.scene.add(pointerLockControls.getObject());
 
@@ -432,6 +481,7 @@ var pressed = {
 
   document.addEventListener('pointerlockchange', function () {
     if (document.pointerLockElement === document.body) {
+      isFirst = false;
       pointerLockControls.enabled = true;
       blocker.style.display = 'none';
     } else {
@@ -474,54 +524,61 @@ var pressed = {
   document.addEventListener('keyup', createKeyEvent(false), false);
 });
 
-(0, _three3D.animate)(function () {
+(function animate() {
   var delta = clock.getDelta();
-  if (pointerLockControls.enabled) {
-    var pointerLockObject = pointerLockControls.getObject();
+  if (!isFirst && gcontrols.controls === 'PointerLock') {
+    if (pointerLockControls.enabled) {
+      var pointerLockObject = pointerLockControls.getObject();
 
-    var direction = new THREE.Vector3();
-    if (pressed.w) {
-      direction.z -= 1;
-    }
-    if (pressed.a) {
-      direction.x -= 1;
-    }
-    if (pressed.s) {
-      direction.z += 1;
-    }
-    if (pressed.d) {
-      direction.x += 1;
-    }
-    direction.normalize();
-
-    var blocked = false;
-
-    var collisionOrigin = pointerLockObject.position.clone().setY(blockedHeight);
-    var collisionDirection = pointerLockObject.localToWorld(direction.clone()).sub(pointerLockObject.localToWorld(new THREE.Vector3())).normalize();
-    collisionRaycaster.set(collisionOrigin, collisionDirection);
-    if (collisionRaycaster.intersectObjects(house.borders).length > 0) {
-      blocked = true;
-    }
-
-    if (!blocked) {
-      pointerLockObject.translateOnAxis(direction, speed * delta);
-    }
-
-    if (mouseEvent) {
-      pointerRaycaster.setFromCamera(new THREE.Vector2(mouseEvent.clientX / window.innerWidth * 2 - 1, mouseEvent.clientY / window.innerHeight * -2 + 1), _three3D.camera);
-
-      intersects = pointerRaycaster.intersectObjects(house.borders);
-
-      if (intersects.length > 0 && house.doors.indexOf(intersects[0].object) === -1) {
-        intersects = [];
+      var direction = new THREE.Vector3();
+      if (pressed.w) {
+        direction.z -= 1;
       }
-    }
+      if (pressed.a) {
+        direction.x -= 1;
+      }
+      if (pressed.s) {
+        direction.z += 1;
+      }
+      if (pressed.d) {
+        direction.x += 1;
+      }
+      direction.normalize();
 
-    var isPointed = intersects.length > 0;
-    document.getElementById('pointer').style.opacity = isPointed ? '1' : '0';
-    document.getElementById('blocked').style.opacity = blocked && !isPointed ? '1' : '0';
+      var blocked = false;
+
+      var collisionOrigin = pointerLockObject.position.clone().setY(gcontrols.blockedHeight);
+      var collisionDirection = pointerLockObject.localToWorld(direction.clone()).sub(pointerLockObject.localToWorld(new THREE.Vector3())).normalize();
+      collisionRaycaster.set(collisionOrigin, collisionDirection);
+      if (collisionRaycaster.intersectObjects(house.borders).length > 0) {
+        blocked = true;
+      }
+
+      if (!blocked) {
+        pointerLockObject.translateOnAxis(direction, gcontrols.speed * delta);
+      }
+
+      if (mouseEvent) {
+        pointerRaycaster.setFromCamera(new THREE.Vector2(mouseEvent.clientX / window.innerWidth * 2 - 1, mouseEvent.clientY / window.innerHeight * -2 + 1), pointerLockCamera);
+
+        intersects = pointerRaycaster.intersectObjects(house.borders);
+
+        if (intersects.length > 0 && house.doors.indexOf(intersects[0].object) === -1) {
+          intersects = [];
+        }
+      }
+
+      var isPointed = intersects.length > 0;
+      document.getElementById('pointer').style.opacity = isPointed ? '1' : '0';
+      document.getElementById('blocked').style.opacity = blocked && !isPointed ? '1' : '0';
+    }
+    _three3D.renderer.render(_three3D.scene, pointerLockCamera);
+  } else {
+    _three3D.controls.update();
+    _three3D.renderer.render(_three3D.scene, _three3D.camera);
   }
-});
+  requestAnimationFrame(animate);
+})();
 
 },{"../../templates/three3D":8,"./House":2,"./rooms":6}],6:[function(require,module,exports){
 'use strict';
@@ -542,7 +599,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var roomHeight = 100;
 var doorHeight = 60;
-var balconyHeight = 40;
+var balconyHeight = 30;
 
 var balconyDepth = 60;
 

@@ -7,6 +7,7 @@
     <script src="../../resources/libraries/threejs/three.min.js"></script>
     <script src="../../resources/libraries/threejs/OrbitControls.js"></script>
     <script src="../../resources/libraries/threejs/PointerLockControls.js"></script>
+    <script src="../../resources/libraries/dat.gui/dat.gui.min.js"></script>
     <style>
       .title {
         position: absolute;
@@ -54,8 +55,10 @@
   </head>
   <body>
     <div class="title">W3D_HW2</div>
-    <div class="center"><img class="cursor-icon" id="pointer" src="../../resources/images/cursor-pointer.png"></div>
-    <div class="center"><img class="cursor-icon" id="blocked" src="../../resources/images/cursor-blocked.png"></div>
+    <div id="cursor-icons">
+      <div class="center"><img class="cursor-icon" id="pointer" src="../../resources/images/cursor-pointer.png"></div>
+      <div class="center"><img class="cursor-icon" id="blocked" src="../../resources/images/cursor-blocked.png"></div>
+    </div>
     <div class="center" id="blocker">
       <div id="instructions">
         <h1>Click to Start</h1>
