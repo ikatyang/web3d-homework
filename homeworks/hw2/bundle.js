@@ -102,6 +102,8 @@ var _Room2 = _interopRequireDefault(_Room);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -123,6 +125,7 @@ var House = function (_THREE$Object3D) {
 
     var rooms = {};
     var doors = [];
+    var borders = [];
 
     Object.keys(roomConfigs).forEach(function (roomName) {
       var roomConfig = roomConfigs[roomName];
@@ -158,7 +161,9 @@ var House = function (_THREE$Object3D) {
       room.walls.forEach(function (wall) {
         if (wall.door) {
           doors.push(wall.door.mesh);
+          borders.push(wall.door.mesh);
         }
+        borders.push.apply(borders, _toConsumableArray(wall.container.children));
       });
     });
     var box = new THREE.Box3().setFromObject(container);
@@ -167,6 +172,7 @@ var House = function (_THREE$Object3D) {
     _this.container = container;
     _this.rooms = rooms;
     _this.doors = doors;
+    _this.borders = borders;
     return _this;
   }
 
@@ -350,6 +356,7 @@ var Wall = function (_THREE$Object3D) {
     _this.height = height;
     _this.direction = direction;
 
+    _this.container = container;
     _this.door = holdDoor ? door : null;
     return _this;
   }
@@ -375,11 +382,14 @@ var _rooms2 = _interopRequireDefault(_rooms);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var speed = 80;
-var clickDistance = 60;
+var clickDistance = 80;
+var blockedHeight = 10;
+var collisionDistance = 10;
 var origin = new THREE.Vector3(0, 40, -50);
 
 var clock = new THREE.Clock();
-var raycaster = new THREE.Raycaster(undefined, undefined, undefined, clickDistance);
+var pointerRaycaster = new THREE.Raycaster(undefined, undefined, undefined, clickDistance);
+var collisionRaycaster = new THREE.Raycaster(undefined, undefined, undefined, collisionDistance);
 
 var house = void 0;
 var intersects = void 0;
@@ -409,7 +419,7 @@ var pressed = {
     mouseEvent = event;
   }, false);
   window.addEventListener('mousedown', function () {
-    if (intersects.length > 0) {
+    if (intersects && intersects.length > 0) {
       intersects[0].object.axis.toggle();
     }
   }, false);
@@ -468,22 +478,48 @@ var pressed = {
   var delta = clock.getDelta();
   if (pointerLockControls.enabled) {
     var pointerLockObject = pointerLockControls.getObject();
+
+    var direction = new THREE.Vector3();
     if (pressed.w) {
-      pointerLockObject.translateZ(-speed * delta);
+      direction.z -= 1;
     }
     if (pressed.a) {
-      pointerLockObject.translateX(-speed * delta);
+      direction.x -= 1;
     }
     if (pressed.s) {
-      pointerLockObject.translateZ(speed * delta);
+      direction.z += 1;
     }
     if (pressed.d) {
-      pointerLockObject.translateX(speed * delta);
+      direction.x += 1;
     }
-  }
-  if (mouseEvent) {
-    raycaster.setFromCamera(new THREE.Vector2(mouseEvent.clientX / window.innerWidth * 2 - 1, mouseEvent.clientY / window.innerHeight * -2 + 1), _three3D.camera);
-    intersects = raycaster.intersectObjects(house.doors);
+    direction.normalize();
+
+    var blocked = false;
+
+    var collisionOrigin = pointerLockObject.position.clone().setY(blockedHeight);
+    var collisionDirection = pointerLockObject.localToWorld(direction.clone()).sub(pointerLockObject.localToWorld(new THREE.Vector3())).normalize();
+    collisionRaycaster.set(collisionOrigin, collisionDirection);
+    if (collisionRaycaster.intersectObjects(house.borders).length > 0) {
+      blocked = true;
+    }
+
+    if (!blocked) {
+      pointerLockObject.translateOnAxis(direction, speed * delta);
+    }
+
+    if (mouseEvent) {
+      pointerRaycaster.setFromCamera(new THREE.Vector2(mouseEvent.clientX / window.innerWidth * 2 - 1, mouseEvent.clientY / window.innerHeight * -2 + 1), _three3D.camera);
+
+      intersects = pointerRaycaster.intersectObjects(house.borders);
+
+      if (intersects.length > 0 && house.doors.indexOf(intersects[0].object) === -1) {
+        intersects = [];
+      }
+    }
+
+    var isPointed = intersects.length > 0;
+    document.getElementById('pointer').style.opacity = isPointed ? '1' : '0';
+    document.getElementById('blocked').style.opacity = blocked && !isPointed ? '1' : '0';
   }
 });
 
