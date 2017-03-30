@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -17,10 +19,10 @@ var Door = function (_THREE$Object3D) {
   /**
    * @param {number} width
    * @param {number} height
-   * @param {'left'|'right'} axis
+   * @param {'left'|'right'} axisPosName
    * @param {number} direction
    */
-  function Door(width, height, axis, direction) {
+  function Door(width, height, axisPosName, direction) {
     _classCallCheck(this, Door);
 
     var _this = _possibleConstructorReturn(this, (Door.__proto__ || Object.getPrototypeOf(Door)).call(this));
@@ -29,7 +31,7 @@ var Door = function (_THREE$Object3D) {
 
     var mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
 
-    mesh.position.x = width / 2 * (axis === 'left' ? -1 : 1);
+    mesh.position.x = width / 2 * (axisPosName === 'left' ? -1 : 1);
     container.add(mesh);
 
     container.position.x = -mesh.position.x;
@@ -37,19 +39,48 @@ var Door = function (_THREE$Object3D) {
 
     _this.width = width;
     _this.height = height;
-    _this.axis = axis;
+    _this.axisPosName = axisPosName;
+    _this.direction = direction;
 
     _this.container = container;
+    _this.mesh = mesh;
+    _this.mesh.axis = _this;
 
-    var sign = 1;
-    setInterval(function () {
-      _this.container.rotation.y += direction * sign * 0.1;
-      if (direction < 0 && (_this.container.rotation.y < Math.PI / -2 || _this.container.rotation.y > 0) || direction > 0 && (_this.container.rotation.y > Math.PI / 2 || _this.container.rotation.y < 0)) {
-        sign *= -1;
-      }
-    }, 50);
+    _this.closed = true;
+    _this.acting = false;
+
+    _this.maxRotation = Math.PI / 2.1;
     return _this;
   }
+
+  _createClass(Door, [{
+    key: 'toggle',
+    value: function toggle() {
+      var _this2 = this;
+
+      if (!this.acting) {
+        this.acting = true;
+        var intervalId = setInterval(function () {
+          var sign = _this2.closed ? 1 : -1;
+          _this2.container.rotation.y += _this2.direction * sign * 0.1;
+
+          var isDone = _this2.direction < 0 ? _this2.container.rotation.y < -_this2.maxRotation || _this2.container.rotation.y > 0 : _this2.container.rotation.y > _this2.maxRotation || _this2.container.rotation.y < 0;
+          if (isDone) {
+            _this2.closed = !_this2.closed;
+
+            if (_this2.closed) {
+              _this2.container.rotation.y = 0;
+            } else {
+              _this2.container.rotation.y = _this2.maxRotation * (_this2.direction > 0 ? 1 : -1);
+            }
+
+            clearInterval(intervalId);
+            _this2.acting = false;
+          }
+        }, 50);
+      }
+    }
+  }]);
 
   return Door;
 }(THREE.Object3D);
@@ -57,6 +88,94 @@ var Door = function (_THREE$Object3D) {
 exports.default = Door;
 
 },{}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _Room = require('./Room');
+
+var _Room2 = _interopRequireDefault(_Room);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var House = function (_THREE$Object3D) {
+  _inherits(House, _THREE$Object3D);
+
+  function House(roomConfigs) {
+    _classCallCheck(this, House);
+
+    var _this = _possibleConstructorReturn(this, (House.__proto__ || Object.getPrototypeOf(House)).call(this));
+
+    var coords = { x: 1, z: -1 };
+
+    var container = new THREE.Object3D();
+    _this.add(container);
+
+    var rooms = {};
+    var doors = [];
+
+    Object.keys(roomConfigs).forEach(function (roomName) {
+      var roomConfig = roomConfigs[roomName];
+
+      var _roomConfig$size = _slicedToArray(roomConfig.size, 2),
+          width = _roomConfig$size[0],
+          depth = _roomConfig$size[1];
+
+      var walls = roomConfig.walls.map(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 1),
+            wall = _ref2[0];
+
+        return wall;
+      });
+      var wallPositions = roomConfig.walls.map(function (_ref3) {
+        var _ref4 = _slicedToArray(_ref3, 2),
+            wallPosition = _ref4[1];
+
+        return wallPosition;
+      });
+      var room = new _Room2.default(width, roomConfig.height, depth, walls, wallPositions);
+
+      var _roomConfig$nextTo = _slicedToArray(roomConfig.nextTo, 2),
+          nextToRoomX = _roomConfig$nextTo[0],
+          nextToRoomZ = _roomConfig$nextTo[1];
+
+      var nextToWidth = nextToRoomX === null ? 0 : rooms[nextToRoomX].position.x + rooms[nextToRoomX].width / 2 * coords.x;
+      var nextToDepth = nextToRoomZ === null ? 0 : rooms[nextToRoomZ].position.z + rooms[nextToRoomZ].depth / 2 * coords.z;
+      room.position.set(nextToWidth + width / 2 * coords.x, 0, nextToDepth + depth / 2 * coords.z);
+      container.add(room);
+      rooms[roomName] = room;
+
+      room.walls.forEach(function (wall) {
+        if (wall.door) {
+          doors.push(wall.door.mesh);
+        }
+      });
+    });
+    var box = new THREE.Box3().setFromObject(container);
+    container.position.sub(box.getCenter().setY(0));
+
+    _this.container = container;
+    _this.rooms = rooms;
+    _this.doors = doors;
+    return _this;
+  }
+
+  return House;
+}(THREE.Object3D);
+
+exports.default = House;
+
+},{"./Room":3}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -125,7 +244,7 @@ var Room = function (_THREE$Object3D) {
           wall.position.set(width / 2, wall.height / 2, depth / -2).add(new THREE.Vector3(0, 0, wallPositionZ));
           break;
         default:
-          break;
+          throw new Error('Unexpected direction: ' + wall.direction);
       }
       _this.add(wall);
     });
@@ -142,7 +261,7 @@ var Room = function (_THREE$Object3D) {
 
 exports.default = Room;
 
-},{"./Wall":3}],3:[function(require,module,exports){
+},{"./Wall":4}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -190,9 +309,7 @@ var Wall = function (_THREE$Object3D) {
 
   }]);
 
-  function Wall(width, height, direction, side, door, doorPosition) {
-    var holdDoor = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : false;
-
+  function Wall(width, height, direction, side, door, doorPosition, holdDoor) {
     _classCallCheck(this, Wall);
 
     var _this = _possibleConstructorReturn(this, (Wall.__proto__ || Object.getPrototypeOf(Wall)).call(this));
@@ -232,6 +349,8 @@ var Wall = function (_THREE$Object3D) {
     _this.width = width;
     _this.height = height;
     _this.direction = direction;
+
+    _this.door = holdDoor ? door : null;
     return _this;
   }
 
@@ -240,16 +359,14 @@ var Wall = function (_THREE$Object3D) {
 
 exports.default = Wall;
 
-},{"./Door":1}],4:[function(require,module,exports){
+},{"./Door":1}],5:[function(require,module,exports){
 'use strict';
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _three3D = require('../../templates/three3D');
 
-var _Room = require('./Room');
+var _House = require('./House');
 
-var _Room2 = _interopRequireDefault(_Room);
+var _House2 = _interopRequireDefault(_House);
 
 var _rooms = require('./rooms');
 
@@ -257,58 +374,120 @@ var _rooms2 = _interopRequireDefault(_rooms);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var speed = 80;
+var clickDistance = 60;
+var origin = new THREE.Vector3(0, 40, -50);
+
+var clock = new THREE.Clock();
+var raycaster = new THREE.Raycaster(undefined, undefined, undefined, clickDistance);
+
+var house = void 0;
+var intersects = void 0;
+var pointerLockControls = void 0;
+var mouseEvent = void 0;
+
+var pressed = {
+  w: false,
+  a: false,
+  s: false,
+  d: false
+};
+
 (0, _three3D.init)(function () {
-  _three3D.camera.position.set(0, 800, 600);
+  pointerLockControls = new THREE.PointerLockControls(_three3D.camera);
+  pointerLockControls.getObject().position.copy(origin);
+  _three3D.scene.add(pointerLockControls.getObject());
 
   var gridHelper = new THREE.GridHelper(450, 45, 0xffffff, 0xffffff);
   gridHelper.position.y = 0.1;
   _three3D.scene.add(gridHelper);
 
-  var house = new THREE.Object3D();
-  house.position.set(-225, 0, 225);
+  house = new _House2.default(_rooms2.default);
   _three3D.scene.add(house);
 
-  var coords = { x: 1, z: -1 };
+  window.addEventListener('mousemove', function (event) {
+    mouseEvent = event;
+  }, false);
+  window.addEventListener('mousedown', function () {
+    if (intersects.length > 0) {
+      intersects[0].object.axis.toggle();
+    }
+  }, false);
 
-  var rooms = {};
-  Object.keys(_rooms2.default).forEach(function (roomName) {
-    var roomConfig = _rooms2.default[roomName];
+  var blocker = document.getElementById('blocker');
 
-    var _roomConfig$size = _slicedToArray(roomConfig.size, 2),
-        width = _roomConfig$size[0],
-        depth = _roomConfig$size[1];
+  blocker.addEventListener('click', function () {
+    document.body.requestPointerLock();
+  }, false);
 
-    var walls = roomConfig.walls.map(function (_ref) {
-      var _ref2 = _slicedToArray(_ref, 1),
-          wall = _ref2[0];
+  document.addEventListener('pointerlockchange', function () {
+    if (document.pointerLockElement === document.body) {
+      pointerLockControls.enabled = true;
+      blocker.style.display = 'none';
+    } else {
+      pointerLockControls.enabled = false;
+      blocker.style.display = '';
+    }
+  }, false);
 
-      return wall;
-    });
-    var wallPositions = roomConfig.walls.map(function (_ref3) {
-      var _ref4 = _slicedToArray(_ref3, 2),
-          wallPosition = _ref4[1];
+  var createKeyEvent = function createKeyEvent(value) {
+    return function (event) {
+      switch (event.key) {
+        case 'w':
+        case 'W':
+        case 'ArrowUp':
+          pressed.w = value;
+          break;
+        case 'a':
+        case 'A':
+        case 'ArrowLeft':
+          pressed.a = value;
+          break;
+        case 's':
+        case 'S':
+        case 'ArrowDown':
+          pressed.s = value;
+          break;
+        case 'd':
+        case 'D':
+        case 'ArrowRight':
+          pressed.d = value;
+          break;
+        default:
+          // do nothing
+          break;
+      }
+    };
+  };
 
-      return wallPosition;
-    });
-    var room = new _Room2.default(width, roomConfig.height, depth, walls, wallPositions);
-
-    var _roomConfig$nextTo = _slicedToArray(roomConfig.nextTo, 2),
-        nextToRoomX = _roomConfig$nextTo[0],
-        nextToRoomZ = _roomConfig$nextTo[1];
-
-    var nextToWidth = nextToRoomX === null ? 0 : rooms[nextToRoomX].position.x + rooms[nextToRoomX].width / 2 * coords.x;
-    var nextToDepth = nextToRoomZ === null ? 0 : rooms[nextToRoomZ].position.z + rooms[nextToRoomZ].depth / 2 * coords.z;
-    room.position.set(nextToWidth + width / 2 * coords.x, 0, nextToDepth + depth / 2 * coords.z);
-    house.add(room);
-    rooms[roomName] = room;
-  });
+  document.addEventListener('keydown', createKeyEvent(true), false);
+  document.addEventListener('keyup', createKeyEvent(false), false);
 });
 
 (0, _three3D.animate)(function () {
-  _three3D.controls.update();
+  var delta = clock.getDelta();
+  if (pointerLockControls.enabled) {
+    var pointerLockObject = pointerLockControls.getObject();
+    if (pressed.w) {
+      pointerLockObject.translateZ(-speed * delta);
+    }
+    if (pressed.a) {
+      pointerLockObject.translateX(-speed * delta);
+    }
+    if (pressed.s) {
+      pointerLockObject.translateZ(speed * delta);
+    }
+    if (pressed.d) {
+      pointerLockObject.translateX(speed * delta);
+    }
+  }
+  if (mouseEvent) {
+    raycaster.setFromCamera(new THREE.Vector2(mouseEvent.clientX / window.innerWidth * 2 - 1, mouseEvent.clientY / window.innerHeight * -2 + 1), _three3D.camera);
+    intersects = raycaster.intersectObjects(house.doors);
+  }
 });
 
-},{"../../templates/three3D":7,"./Room":2,"./rooms":5}],5:[function(require,module,exports){
+},{"../../templates/three3D":8,"./House":2,"./rooms":6}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -501,7 +680,7 @@ exports.default = {
   }
 };
 
-},{"./Door":1,"./Wall":3}],6:[function(require,module,exports){
+},{"./Door":1,"./Wall":4}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -531,7 +710,7 @@ function animate(camera, callback) {
   })();
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -569,4 +748,4 @@ function animate() {
   (0, _three.animate)(camera, callback);
 }
 
-},{"./three":6}]},{},[4]);
+},{"./three":7}]},{},[5]);
