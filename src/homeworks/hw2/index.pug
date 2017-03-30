@@ -33,10 +33,11 @@ append style
     }
 
 append body
-  .center
-    img.cursor-icon#pointer(src=`${resources}/images/cursor-pointer.png`)
-  .center
-    img.cursor-icon#blocked(src=`${resources}/images/cursor-blocked.png`)
+  #cursor-icons
+    .center
+      img.cursor-icon#pointer(src=`${resources}/images/cursor-pointer.png`)
+    .center
+      img.cursor-icon#blocked(src=`${resources}/images/cursor-blocked.png`)
   #blocker.center
     #instructions
       h1='Click to Start'
