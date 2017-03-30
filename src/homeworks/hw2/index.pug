@@ -25,7 +25,7 @@ append style
       margin: 0;
     }
 
-    #pointer {
+    .cursor-icon {
       height: 40px;
       opacity: 0;
       transition: opacity 1s;
@@ -33,7 +33,9 @@ append style
 
 append body
   .center
-    img#pointer(src=`${resources}/images/cursor-pointer.png`)
+    img.cursor-icon#pointer(src=`${resources}/images/cursor-pointer.png`)
+  .center
+    img.cursor-icon#blocked(src=`${resources}/images/cursor-blocked.png`)
   #blocker.center
     #instructions
       h1='Click to Start'

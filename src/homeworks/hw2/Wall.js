@@ -60,6 +60,7 @@ export default class Wall extends THREE.Object3D {
     this.height = height;
     this.direction = direction;
 
+    this.container = container;
     this.door = holdDoor ? door : null;
   }
 
