@@ -2,7 +2,7 @@
 
 [![build](https://travis-ci.org/ikatyang/web3d-homework.svg)](https://travis-ci.org/ikatyang/web3d-homework)
 
-web3d homework
+web3d homework using three.js
 
 ## Development
 
