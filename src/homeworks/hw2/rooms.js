@@ -3,7 +3,7 @@ import Wall from './Wall';
 
 const roomHeight = 100;
 const doorHeight = 60;
-const balconyHeight = 40;
+const balconyHeight = 30;
 
 const balconyDepth = 60;
 

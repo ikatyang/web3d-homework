@@ -10,7 +10,7 @@ const gcontrols = {
 const clickDistance = 80;
 const collisionDistance = 10;
 
-const origin = new THREE.Vector3(0, 40, -50);
+const origin = new THREE.Vector3(0, 40, 300);
 
 const clock = new THREE.Clock();
 const pointerRaycaster = new THREE.Raycaster(
