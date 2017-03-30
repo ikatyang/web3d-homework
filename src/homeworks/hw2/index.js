@@ -27,7 +27,8 @@ gui.add(gcontrols, 'speed', 0, 200);
 gui.add(gcontrols, 'blockedHeight', 0, 80);
 gui.add(pointerRaycaster, 'far', 0, 200).name('clickDistance');
 gui.add(collisionRaycaster, 'far', 0, 50).name('collisionDistance');
-gui.add(gcontrols, 'controls', ['Orbit', 'PointerLock']).onChange((value) => {
+
+const onControlsChange = (value) => {
   const blocker = document.getElementById('blocker');
   const icons = document.getElementById('cursor-icons');
   if (value === 'Orbit') {
@@ -38,6 +39,26 @@ gui.add(gcontrols, 'controls', ['Orbit', 'PointerLock']).onChange((value) => {
     blocker.style.display = '';
     icons.style.display = '';
   }
+};
+
+const controlsController = gui.add(gcontrols, 'controls', ['Orbit', 'PointerLock']).onChange(onControlsChange);
+
+const setViewport = position => () => {
+  gcontrols.controls = 'Orbit';
+  onControlsChange(gcontrols.controls);
+  controlsController.updateDisplay();
+  orbitCamera.position.copy(position);
+};
+
+const viewports = [
+  new THREE.Vector3(0, 300, 600),
+  new THREE.Vector3(-300, 300, -300),
+  new THREE.Vector3(300, 300, -300),
+];
+viewports.forEach((viewport, index) => {
+  const viewportName = `setViewport${index + 1}`;
+  gcontrols[viewportName] = setViewport(viewport);
+  gui.add(gcontrols, viewportName);
 });
 
 let house;
