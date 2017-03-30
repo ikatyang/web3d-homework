@@ -17,7 +17,7 @@ export default class Wall extends THREE.Object3D {
    * @param {number} doorPosition
    * @param {boolean} holdDoor
    */
-  constructor(width, height, direction, side, door, doorPosition, holdDoor = false) {
+  constructor(width, height, direction, side, door, doorPosition, holdDoor) {
     super();
 
     const container = new THREE.Object3D();
@@ -59,6 +59,8 @@ export default class Wall extends THREE.Object3D {
     this.width = width;
     this.height = height;
     this.direction = direction;
+
+    this.door = holdDoor ? door : null;
   }
 
 }
