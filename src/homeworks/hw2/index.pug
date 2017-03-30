@@ -1,1 +1,29 @@
 extends ../../templates/homework3D.pug
+
+append import
+  script(src=`${resources}/libraries/threejs/PointerLockControls.js`)
+
+append style
+  style.
+    #blocker {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.5);
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      cursor: pointer;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #instructions * {
+      margin: 0;
+    }
+
+append body
+  #blocker
+    #instructions
+      h1='Click to Start'
+      p='(W, A, S, D = Move, MOUSE = Look arround)'

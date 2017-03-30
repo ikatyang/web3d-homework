@@ -55,7 +55,7 @@ export default class Room extends THREE.Object3D {
             .add(new THREE.Vector3(0, 0, wallPositionZ));
           break;
         default:
-          break;
+          throw new Error(`Unexpected direction: ${wall.direction}`);
       }
       this.add(wall);
     });
