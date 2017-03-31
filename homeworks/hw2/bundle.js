@@ -126,6 +126,7 @@ var House = function (_THREE$Object3D) {
     var rooms = {};
     var doors = [];
     var borders = [];
+    var grounds = [];
 
     Object.keys(roomConfigs).forEach(function (roomName) {
       var roomConfig = roomConfigs[roomName];
@@ -165,6 +166,13 @@ var House = function (_THREE$Object3D) {
         }
         borders.push.apply(borders, _toConsumableArray(wall.container.children));
       });
+
+      room.ground.roomName = roomName;
+      grounds.push(room.ground);
+
+      var light = new THREE.PointLight(0xffffff, 0.2);
+      light.position.y = 60;
+      room.add(light);
     });
     var box = new THREE.Box3().setFromObject(container);
     container.position.sub(box.getCenter().setY(0));
@@ -173,6 +181,7 @@ var House = function (_THREE$Object3D) {
     _this.rooms = rooms;
     _this.doors = doors;
     _this.borders = borders;
+    _this.grounds = grounds;
     return _this;
   }
 
@@ -225,7 +234,9 @@ var Room = function (_THREE$Object3D) {
 
     var _this = _possibleConstructorReturn(this, (Room.__proto__ || Object.getPrototypeOf(Room)).call(this));
 
-    var ground = new THREE.Mesh(new THREE.PlaneGeometry(width, depth));
+    var ground = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), new THREE.MeshPhongMaterial({
+      color: new THREE.Color().setRGB(Math.random() * 0.2, Math.random() * 0.2, Math.random() * 0.2)
+    }));
     ground.rotation.x = Math.PI / -2;
     _this.add(ground);
 
@@ -280,6 +291,7 @@ var Room = function (_THREE$Object3D) {
     _this.height = height;
     _this.depth = depth;
     _this.walls = walls;
+    _this.ground = ground;
     return _this;
   }
 
@@ -322,7 +334,9 @@ var transparentMaterial = new THREE.MeshBasicMaterial({ transparent: true, opaci
 var allSides = ['l', 'r', 'u', 'd', 'b', 'f'];
 var createMultiMaterial = function createMultiMaterial(sides) {
   var materials = [];
-  var material = new THREE.MeshBasicMaterial({ color: Math.floor(Math.random() * 0xffffff) });
+  var material = new THREE.MeshPhongMaterial({
+    color: new THREE.Color(Math.random() * 0.3, Math.random() * 0.3, Math.random() * 0.3)
+  });
   allSides.forEach(function (side) {
     if (side === 'u' || side === 'd') {
       materials.push(blackMaterial);
@@ -446,6 +460,8 @@ exports.default = Wall;
 },{"./Door":1}],5:[function(require,module,exports){
 'use strict';
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _three3D = require('../../templates/three3D');
 
 var _House = require('./House');
@@ -472,6 +488,7 @@ var origin = new THREE.Vector3(0, 40, 300);
 var clock = new THREE.Clock();
 var pointerRaycaster = new THREE.Raycaster(undefined, undefined, undefined, clickDistance);
 var collisionRaycaster = new THREE.Raycaster(undefined, undefined, undefined, collisionDistance);
+var groundRaycaster = new THREE.Raycaster(undefined, undefined, undefined, 100);
 
 var pointerLockCamera = _three3D.camera.clone();
 
@@ -609,6 +626,16 @@ var pressed = {
     };
   };
 
+  [[0, 230], [300, 230], [-300, 230], [75, -240], [-80, -180]].forEach(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        x = _ref2[0],
+        z = _ref2[1];
+
+    var light = new THREE.PointLight(0xffffff, 1);
+    light.position.set(x, 80, z);
+    _three3D.scene.add(light);
+  });
+
   document.addEventListener('keydown', createKeyEvent(true), false);
   document.addEventListener('keyup', createKeyEvent(false), false);
 
@@ -676,6 +703,15 @@ var pressed = {
     _three3D.controls.update();
     _three3D.renderer.render(_three3D.scene, _three3D.camera);
   }
+
+  groundRaycaster.set(pointerLockObject.position, new THREE.Vector3(0, -1, 0));
+  var intersectGrounds = groundRaycaster.intersectObjects(house.grounds);
+  var roomName = intersectGrounds.length === 0 ? 'outside' : intersectGrounds[0].object.roomName;
+  var characterPos = pointerLockObject.position;
+  document.getElementById('position').innerHTML = '(' + Math.floor(characterPos.x) + ', ' + Math.floor(characterPos.z) + ')';
+  document.getElementById('location').innerHTML = roomName[0].toUpperCase() + roomName.slice(1).replace(/[A-Z]/g, function (x) {
+    return ' ' + x;
+  });
 
   minimapCamera.position.copy(pointerLockObject.position).setY(300);
 

@@ -58,10 +58,43 @@
         bottom: 0;
       }
       
+      #minimap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 200px;
+        border: 1px solid yellow;
+        border-top: 0;
+        border-left: 0;
+      }
+      
+      #minimap .info {
+        position: relative;
+        top: 100%;
+        width: 100%;
+        text-align: center;
+        margin-top: 0.5em;
+      }
+      
+      #plan2D {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        margin: 0.5em;
+        color: yellow;
+      }
+      
     </style>
   </head>
   <body>
     <div class="title">W3D_HW2</div>
+    <div id="minimap">
+      <div class="info">
+        <div id="position"></div>
+        <div id="location"></div>
+      </div>
+    </div>
     <div id="cursor-icons">
       <div class="center"><img class="cursor-icon" id="pointer" src="../../resources/images/cursor-pointer.png"></div>
       <div class="center"><img class="cursor-icon" id="blocked" src="../../resources/images/cursor-blocked.png"></div>
@@ -71,7 +104,7 @@
         <h1>Click to Start</h1>
         <p>(W, A, S, D = Move, MOUSE = Look arround)</p>
       </div>
-    </div>
+    </div><a id="plan2D" href="../../resources/images/plan2D.png">2D Plan</a>
     <script src="bundle.js"></script>
   </body>
 </html>
