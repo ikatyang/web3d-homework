@@ -29,7 +29,7 @@ var Door = function (_THREE$Object3D) {
 
     var container = new THREE.Object3D();
 
-    var mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
+    var mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true, opacity: 0.5 }));
 
     mesh.position.x = width / 2 * (axisPosName === 'left' ? -1 : 1);
     container.add(mesh);
@@ -231,23 +231,44 @@ var Room = function (_THREE$Object3D) {
 
     walls.forEach(function (wall, index) {
       var wallPosition = wallPositions[index];
-      var isNegative = wallPosition < 0 || 1 / wallPosition === -Infinity;
 
-      var wallPositionX = isNegative ? width + wallPosition : wallPosition;
-      var wallPositionZ = isNegative ? depth + wallPosition : wallPosition;
+      var wallPositionX = void 0;
+      var wallPositionZ = void 0;
+
+      if (typeof wallPosition === 'number') {
+        var isNegative = wallPosition < 0 || 1 / wallPosition === -Infinity;
+
+        wallPositionX = isNegative ? width + wallPosition : wallPosition;
+        wallPositionZ = isNegative ? depth + wallPosition : wallPosition;
+      } else {
+        wallPositionX = +wallPosition;
+        wallPositionZ = +wallPosition;
+      }
 
       switch (wall.direction) {
         case 'north':
           wall.position.set(width / -2, wall.height / 2, depth / -2).add(new THREE.Vector3(wallPositionX, 0, 0));
+          if (wall.depthDelta) {
+            wall.position.add(new THREE.Vector3(0, 0, wall.depth / -2).multiplyScalar(wall.depthDelta));
+          }
           break;
         case 'west':
           wall.position.set(width / -2, wall.height / 2, depth / 2).add(new THREE.Vector3(0, 0, -wallPositionZ));
+          if (wall.depthDelta) {
+            wall.position.add(new THREE.Vector3(wall.depth / -2, 0, 0).multiplyScalar(wall.depthDelta));
+          }
           break;
         case 'south':
           wall.position.set(width / 2, wall.height / 2, depth / 2).add(new THREE.Vector3(-wallPositionX, 0, 0));
+          if (wall.depthDelta) {
+            wall.position.add(new THREE.Vector3(0, 0, wall.depth / 2).multiplyScalar(wall.depthDelta));
+          }
           break;
         case 'east':
           wall.position.set(width / 2, wall.height / 2, depth / -2).add(new THREE.Vector3(0, 0, wallPositionZ));
+          if (wall.depthDelta) {
+            wall.position.add(new THREE.Vector3(wall.depth / 2, 0, 0).multiplyScalar(wall.depthDelta));
+          }
           break;
         default:
           throw new Error('Unexpected direction: ' + wall.direction);
@@ -292,7 +313,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // eslint-disable-line no-unused-vars
 
+var singleDepth = 5;
 var directions = ['north', 'west', 'south', 'east'];
+
+var blackMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
+var transparentMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 });
+
+var allSides = ['l', 'r', 'u', 'd', 'b', 'f'];
+var createMultiMaterial = function createMultiMaterial(sides) {
+  var materials = [];
+  var material = new THREE.MeshBasicMaterial({ color: Math.floor(Math.random() * 0xffffff) });
+  allSides.forEach(function (side) {
+    if (side === 'u' || side === 'd') {
+      materials.push(blackMaterial);
+    } else {
+      materials.push(sides.indexOf(side) === -1 ? transparentMaterial : material);
+    }
+  });
+  return new THREE.MultiMaterial(materials);
+};
 
 var Wall = function (_THREE$Object3D) {
   _inherits(Wall, _THREE$Object3D);
@@ -302,55 +341,88 @@ var Wall = function (_THREE$Object3D) {
     get: function get() {
       return directions;
     }
+  }, {
+    key: 'singleDepth',
+    get: function get() {
+      return singleDepth;
+    }
 
     /**
      * @param {number} width
      * @param {number} height
      * @param {'north'|'west'|'south'|'east'} direction
-     * @param {THREE.Side} side
+     * @param {string} sides
+     *    'u' = up
+     *    'd' = down
+     *    'l' = left
+     *    'r' = right
+     *    'f' = front
+     *    'b' = back
+     * @param {number} bottom
+     * @param {number} depthCount
+     * @param {number} depthDelta
      * @param {Door} door
      * @param {number} doorPosition
+     * @param {number} doorDepthDelta
      * @param {boolean} holdDoor
      */
 
   }]);
 
-  function Wall(width, height, direction, side, door, doorPosition, holdDoor) {
+  function Wall(width, height, direction, sides, bottom, depthCount, depthDelta, door, doorPosition, doorDepthDelta, holdDoor) {
     _classCallCheck(this, Wall);
 
     var _this = _possibleConstructorReturn(this, (Wall.__proto__ || Object.getPrototypeOf(Wall)).call(this));
+
+    var wallSides = {
+      all: sides.all || sides,
+      top: sides.top || '',
+      left: sides.left || '',
+      right: sides.right || ''
+    };
+
+    wallSides.top += wallSides.all;
+    wallSides.left += wallSides.all;
+    wallSides.right += wallSides.all;
+
+    var depth = singleDepth * depthCount;
 
     var container = new THREE.Object3D();
     container.rotation.y = directions.indexOf(direction) * (Math.PI / 2);
     _this.add(container);
 
     if (!door) {
-      var mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ side: side, color: Math.floor(Math.random() * 0xffffff) }));
+      var mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), createMultiMaterial(wallSides.all));
+      mesh.position.y = bottom;
       container.add(mesh);
     } else {
       var isNegative = doorPosition < 0 || 1 / doorPosition === -Infinity;
 
       if (height > 0) {
-        var doorDeltaX = door.width / -2 + (isNegative ? width + doorPosition : doorPosition);
-        var partitions = [[0, door.height, width, height - door.height], [0, 0, doorDeltaX, door.height], [doorDeltaX + door.width, 0, width - doorDeltaX - door.width, door.height]];
-        partitions.forEach(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 4),
-              left = _ref2[0],
-              bottom = _ref2[1],
-              partitionWidth = _ref2[2],
-              partitionHeight = _ref2[3];
+        var doorDeltaX = door.width / -2 + (isNegative ? width + doorPosition - singleDepth * 2 : doorPosition + singleDepth * 2);
+        var partitions = {
+          top: [0, door.height, width, height - door.height],
+          left: [0, 0, doorDeltaX, door.height],
+          right: [doorDeltaX + door.width, 0, width - doorDeltaX - door.width, door.height]
+        };
+        Object.keys(partitions).forEach(function (partitionName) {
+          var _partitions$partition = _slicedToArray(partitions[partitionName], 4),
+              partitionLeft = _partitions$partition[0],
+              partitionBottom = _partitions$partition[1],
+              partitionWidth = _partitions$partition[2],
+              partitionHeight = _partitions$partition[3];
 
           if (partitionWidth > 0 && partitionHeight > 0) {
-            var _mesh = new THREE.Mesh(new THREE.PlaneGeometry(partitionWidth, partitionHeight), new THREE.MeshBasicMaterial({ side: side, color: Math.floor(Math.random() * 0xffffff) }));
-            _mesh.position.set(width / -2 + partitionWidth / 2 + left, height / -2 + partitionHeight / 2 + bottom, 0);
+            var _mesh = new THREE.Mesh(new THREE.BoxGeometry(partitionWidth, partitionHeight, depth), createMultiMaterial(wallSides[partitionName]));
+            _mesh.position.set(width / -2 + partitionWidth / 2 + partitionLeft, height / -2 + partitionHeight / 2 + partitionBottom + bottom, 0);
             container.add(_mesh);
           }
         });
       }
 
       if (holdDoor) {
-        var doorPositionX = width / -2 + (isNegative ? width + doorPosition : doorPosition);
-        door.position.set(doorPositionX, height / -2 + door.height / 2, 0);
+        var doorPositionX = width / -2 + (isNegative ? width + doorPosition - singleDepth * 2 : doorPosition + singleDepth * 2);
+        door.position.set(doorPositionX, height / -2 + door.height / 2, doorDepthDelta * singleDepth);
         container.add(door);
       }
     }
@@ -358,6 +430,8 @@ var Wall = function (_THREE$Object3D) {
     _this.width = width;
     _this.height = height;
     _this.direction = direction;
+    _this.depth = depth;
+    _this.depthDelta = depthDelta;
 
     _this.container = container;
     _this.door = holdDoor ? door : null;
@@ -673,7 +747,7 @@ var aisle = {
 
 var bedRoomNorth = {
   width: 120,
-  depth: 120,
+  depth: balconyNorthWest.depth + diningRoom.depth - aisle.depth,
   door: new _Door2.default(doorWidthLarge, doorHeight, 'left', 1)
 };
 
@@ -694,85 +768,85 @@ exports.default = {
     height: roomHeight,
     size: [bedRoomWest.width, bedRoomWest.depth],
     nextTo: [null, null],
-    walls: [[new _Wall2.default(balconyWest.width, roomHeight, 'north', THREE.DoubleSide, balconyWest.door, balconyWest.door.width / 2, false), balconyWest.width / 2], [new _Wall2.default(bedRoomWest.width - balconyWest.width, roomHeight, 'north', THREE.FrontSide), (bedRoomWest.width - balconyWest.width) / -2], [new _Wall2.default(bedRoomWest.depth, roomHeight, 'west', THREE.DoubleSide), bedRoomWest.depth / 2], [new _Wall2.default(bedRoomWest.width, roomHeight, 'south', THREE.DoubleSide), bedRoomWest.width / 2], [new _Wall2.default(bedRoomWest.depth, roomHeight, 'east', THREE.FrontSide, bedRoomWest.door, bedRoomWest.door.width / 2, true), bedRoomWest.depth / 2]]
+    walls: [[new _Wall2.default(balconyWest.width, roomHeight, 'north', { all: 'fb', right: 'r' }, 0, 2, -1, balconyWest.door, balconyWest.door.width / 2, 0, false), balconyWest.width / 2], [new _Wall2.default(bedRoomWest.width - balconyWest.width, roomHeight, 'north', 'fb', 0, 1, -3), (bedRoomWest.width - balconyWest.width) / -2], [new _Wall2.default(bedRoomWest.depth, roomHeight, 'west', 'fb', 0, 2, -1), bedRoomWest.depth / 2], [new _Wall2.default(bedRoomWest.width, roomHeight, 'south', 'fb', 0, 2, -1), bedRoomWest.width / 2], [new _Wall2.default(bedRoomWest.depth, roomHeight, 'east', { all: 'fb', right: 'r' }, 0, 1, -3, bedRoomWest.door, bedRoomWest.door.width / 2, -0.5, true), bedRoomWest.depth / 2]]
   },
   balconyWest: {
     height: balconyHeight,
     size: [balconyWest.width, balconyWest.depth],
     nextTo: [null, 'bedRoomWest'],
-    walls: [[new _Wall2.default(balconyWest.width, balconyHeight, 'north', THREE.DoubleSide), balconyWest.width / 2], [new _Wall2.default(balconyWest.depth, balconyHeight, 'west', THREE.DoubleSide), balconyWest.depth / 2], [new _Wall2.default(balconyWest.width, 0, 'south', THREE.FrontSide, balconyWest.door, balconyWest.door.width / -2, true), -balconyWest.width / 2]]
+    walls: [[new _Wall2.default(balconyWest.width, balconyHeight, 'north', 'fb', 0, 2, -1), balconyWest.width / 2], [new _Wall2.default(balconyWest.depth, balconyHeight, 'west', 'fb', 0, 2, -1), balconyWest.depth / 2], [new _Wall2.default(balconyWest.width, 0, 'south', 'fb', 0, 1, -1, balconyWest.door, balconyWest.door.width / -2, -1.5, true), -balconyWest.width / 2]]
   },
   drawingRoom: {
     height: roomHeight,
     size: [drawingRoom.width, drawingRoom.depth],
     nextTo: ['bedRoomWest', null],
-    walls: [[new _Wall2.default(drawingRoom.depth, roomHeight, 'west', THREE.FrontSide, bedRoomWest.door, bedRoomWest.door.width / -2, false), drawingRoom.depth / 2], [new _Wall2.default(drawingRoom.width, roomHeight, 'south', THREE.DoubleSide, drawingRoom.door, drawingRoom.door.width / 2, true), drawingRoom.width / 2], [new _Wall2.default(drawingRoom.depth, roomHeight, 'east', THREE.FrontSide), drawingRoom.depth / 2]]
+    walls: [[new _Wall2.default(drawingRoom.depth, roomHeight, 'west', { all: 'fb', left: 'l' }, 0, 1, 1, bedRoomWest.door, bedRoomWest.door.width / -2, 0, false), drawingRoom.depth / 2], [new _Wall2.default(drawingRoom.width, roomHeight, 'south', { all: 'fb', left: 'l', right: 'r' }, 0, 2, -1, drawingRoom.door, drawingRoom.door.width / 2, 0, true), drawingRoom.width / 2], [new _Wall2.default(drawingRoom.depth, roomHeight, 'east', 'fb', 0, 1, 1), drawingRoom.depth / 2]]
   },
   kitchen: {
     height: roomHeight,
     size: [kitchen.width, kitchen.depth],
     nextTo: ['balconyWest', 'drawingRoom'],
-    walls: [[new _Wall2.default(kitchen.width, roomHeight, 'north', THREE.DoubleSide), kitchen.width / 2], [new _Wall2.default(kitchen.depth, roomHeight, 'west', THREE.DoubleSide), kitchen.depth / 2], [new _Wall2.default(bedRoomWest.width - balconyWest.width, roomHeight, 'south', THREE.FrontSide), (bedRoomWest.width - balconyWest.width) / -2]]
+    walls: [[new _Wall2.default(kitchen.width, roomHeight, 'north', 'fb', 0, 2, -1), kitchen.width / 2], [new _Wall2.default(kitchen.depth, roomHeight, 'west', 'fb', 0, 2, -1), kitchen.depth / 2], [new _Wall2.default(bedRoomWest.width - balconyWest.width, roomHeight, 'south', 'fb', 0, 1, 1), (bedRoomWest.width - balconyWest.width) / -2]]
   },
   balconyNorthWest: {
     height: balconyHeight,
     size: [balconyNorthWest.width, balconyNorthWest.depth],
     nextTo: ['balconyWest', 'kitchen'],
-    walls: [[new _Wall2.default(balconyNorthWest.width, balconyHeight, 'north', THREE.DoubleSide), balconyNorthWest.width / 2], [new _Wall2.default(balconyNorthWest.depth, balconyHeight, 'west', THREE.DoubleSide), balconyNorthWest.depth / 2], [new _Wall2.default(balconyNorthWest.width, 0, 'south', THREE.FrontSide, balconyNorthWest.door, balconyNorthWest.door.width / 2, true), balconyNorthWest.width / 2]]
+    walls: [[new _Wall2.default(balconyNorthWest.width, balconyHeight, 'north', 'fb', 0, 2, -1), balconyNorthWest.width / 2], [new _Wall2.default(balconyNorthWest.depth, balconyHeight, 'west', 'fb', 0, 2, -1), balconyNorthWest.depth / 2], [new _Wall2.default(balconyNorthWest.width, 0, 'south', 'fb', 0, 1, -1, balconyNorthWest.door, balconyNorthWest.door.width / 2, -1.5, true), balconyNorthWest.width / 2]]
   },
   diningRoom: {
     height: roomHeight,
     size: [diningRoom.width, diningRoom.depth],
     nextTo: ['kitchen', 'drawingRoom'],
-    walls: [[new _Wall2.default(diningRoom.width, roomHeight, 'north', THREE.DoubleSide, balconyNorthWest.door, balconyNorthWest.door.width / -2, false), diningRoom.width / 2], [new _Wall2.default(diningRoom.depth - aisle.depth, roomHeight, 'east', THREE.FrontSide), (diningRoom.depth - aisle.depth) / 2]]
+    walls: [[new _Wall2.default(diningRoom.width, roomHeight, 'north', { all: 'fb', left: 'l', right: 'r' }, 0, 2, -1, balconyNorthWest.door, balconyNorthWest.door.width / -2, 0, false), diningRoom.width / 2], [new _Wall2.default(diningRoom.depth - aisle.depth, roomHeight, 'east', 'fb', 0, 1, 1), (diningRoom.depth - aisle.depth) / 2]]
   },
   shaft: {
     height: roomHeight,
     size: [shaft.width, shaft.depth],
     nextTo: ['drawingRoom', null],
-    walls: [[new _Wall2.default(shaft.width, roomHeight, 'north', THREE.FrontSide), shaft.width / 2], [new _Wall2.default(shaft.depth, roomHeight, 'west', THREE.FrontSide), shaft.depth / 2], [new _Wall2.default(shaft.width, roomHeight, 'south', THREE.DoubleSide), shaft.width / 2], [new _Wall2.default(shaft.depth, roomHeight, 'east', THREE.FrontSide), shaft.depth / 2]]
+    walls: [[new _Wall2.default(shaft.width, roomHeight, 'north', 'fb', 0, 1, -1), shaft.width / 2], [new _Wall2.default(shaft.depth, roomHeight, 'west', 'fb', 0, 1, -3), shaft.depth / 2], [new _Wall2.default(shaft.width, roomHeight, 'south', 'fb', 0, 2, -1), shaft.width / 2], [new _Wall2.default(shaft.depth, roomHeight, 'east', 'fb', 0, 1, -1), shaft.depth / 2]]
   },
   toiletSouthEast: {
     height: roomHeight,
     size: [toiletSouthEast.width, toiletSouthEast.depth],
     nextTo: ['shaft', null],
-    walls: [[new _Wall2.default(toiletSouthEast.width, roomHeight, 'north', THREE.FrontSide, toiletSouthEast.door, toiletSouthEast.door.width / -2, true), toiletSouthEast.width / 2], [new _Wall2.default(toiletSouthEast.depth, roomHeight, 'west', THREE.FrontSide), toiletSouthEast.depth / 2], [new _Wall2.default(toiletSouthEast.width, roomHeight, 'south', THREE.DoubleSide), toiletSouthEast.width / 2], [new _Wall2.default(toiletSouthEast.depth, roomHeight, 'east', THREE.DoubleSide), toiletSouthEast.depth / 2]]
+    walls: [[new _Wall2.default(toiletSouthEast.width, roomHeight, 'north', { all: 'fb', left: 'l' }, 0, 1, -1, toiletSouthEast.door, toiletSouthEast.door.width / -2, -0.5, true), toiletSouthEast.width / 2], [new _Wall2.default(toiletSouthEast.depth, roomHeight, 'west', 'fb', 0, 1, -1), toiletSouthEast.depth / 2], [new _Wall2.default(toiletSouthEast.width, roomHeight, 'south', 'fb', 0, 2, -1), toiletSouthEast.width / 2], [new _Wall2.default(toiletSouthEast.depth, roomHeight, 'east', 'fb', 0, 2, -1), toiletSouthEast.depth / 2]]
   },
   toiletSouth: {
     height: roomHeight,
     size: [toiletSouth.width, toiletSouth.depth],
     nextTo: ['drawingRoom', 'shaft'],
-    walls: [[new _Wall2.default(toiletSouth.width, roomHeight, 'north', THREE.DoubleSide, toiletSouth.door, toiletSouth.door.width / 2, true), toiletSouth.width / 2], [new _Wall2.default(toiletSouth.depth, roomHeight, 'west', THREE.FrontSide), toiletSouth.depth / 2], [new _Wall2.default(toiletSouth.width, roomHeight, 'south', THREE.FrontSide), toiletSouth.width / 2], [new _Wall2.default(toiletSouth.depth, roomHeight, 'east', THREE.FrontSide), toiletSouth.depth / 2]]
+    walls: [[new _Wall2.default(toiletSouth.width, roomHeight, 'north', { all: 'fb', right: 'r' }, 0, 2, -1, toiletSouth.door, toiletSouth.door.width / 2, 0, true), toiletSouth.width / 2], [new _Wall2.default(toiletSouth.depth, roomHeight, 'west', 'fb', 0, 1, -3), toiletSouth.depth / 2], [new _Wall2.default(toiletSouth.width, roomHeight, 'south', 'fb', 0, 1, -1), toiletSouth.width / 2], [new _Wall2.default(toiletSouth.depth, roomHeight, 'east', 'fb', 0, 1, -1), toiletSouth.depth / 2]]
   },
   bedRoomEast: {
     height: roomHeight,
     size: [bedRoomEast.width, bedRoomEast.depth],
     nextTo: ['toiletSouth', 'shaft'],
-    walls: [[new _Wall2.default(bedRoomEast.width - balconyEast.width, roomHeight, 'north', THREE.FrontSide), (bedRoomEast.width - balconyEast.width) / 2], [new _Wall2.default(balconyEast.width, roomHeight, 'north', THREE.DoubleSide, balconyEast.door, balconyEast.door.width / 2, false), balconyEast.width / -2], [new _Wall2.default(aisle.depth, roomHeight, 'west', THREE.DoubleSide, bedRoomEast.door, bedRoomEast.door.width / -2, true), aisle.depth / -2], [new _Wall2.default(bedRoomEast.depth - aisle.depth, roomHeight, 'west', THREE.FrontSide), (bedRoomEast.depth - aisle.depth) / 2], [new _Wall2.default(bedRoomEast.width, roomHeight, 'south', THREE.FrontSide, toiletSouthEast.door, toiletSouthEast.door.width / 2, false), bedRoomEast.width / 2], [new _Wall2.default(bedRoomEast.depth, roomHeight, 'east', THREE.DoubleSide), bedRoomEast.depth / 2]]
+    walls: [[new _Wall2.default(bedRoomEast.width - balconyEast.width, roomHeight, 'north', 'fb', 0, 1, 1), (bedRoomEast.width - balconyEast.width) / 2], [new _Wall2.default(balconyEast.width, roomHeight, 'north', { all: 'fb', left: 'l', right: 'r' }, 0, 2, 1, balconyEast.door, balconyEast.door.width / 2, 0, false), balconyEast.width / -2], [new _Wall2.default(aisle.depth, roomHeight, 'west', { all: 'fb', right: 'r' }, 0, 2, 0, bedRoomEast.door, bedRoomEast.door.width / -2, 0, true), aisle.depth / -2], [new _Wall2.default(bedRoomEast.depth - aisle.depth, roomHeight, 'west', 'fbl', 0, 1, -1), (bedRoomEast.depth - aisle.depth) / 2], [new _Wall2.default(bedRoomEast.width, roomHeight, 'south', { all: 'fb', right: 'r' }, 0, 1, -1, toiletSouthEast.door, toiletSouthEast.door.width / 2, 0, false), bedRoomEast.width / 2], [new _Wall2.default(bedRoomEast.depth, roomHeight, 'east', 'fb', 0, 2, -1), bedRoomEast.depth / 2], [new _Wall2.default(_Wall2.default.singleDepth * 2, roomHeight - balconyHeight, 'east', 'fb', balconyHeight, 2, -1), '-' + _Wall2.default.singleDepth]]
   },
   aisle: {
     height: roomHeight,
     size: [aisle.width, aisle.depth],
     nextTo: ['drawingRoom', 'toiletSouth'],
-    walls: [[new _Wall2.default(aisle.width, roomHeight, 'north', THREE.FrontSide, bedRoomNorth.door, bedRoomNorth.door.width / 2, false), aisle.width / 2]]
+    walls: [[new _Wall2.default(aisle.width, roomHeight, 'north', { all: 'fb', right: 'r' }, 0, 1, 1, bedRoomNorth.door, bedRoomNorth.door.width / 2, 0, false), aisle.width / 2]]
   },
   bedRoomNorth: {
     height: roomHeight,
     size: [bedRoomNorth.width, bedRoomNorth.depth],
     nextTo: ['drawingRoom', 'bedRoomEast'],
-    walls: [[new _Wall2.default(bedRoomNorth.width, roomHeight, 'north', THREE.DoubleSide, balconyNorthEast.door, balconyNorthEast.door.width / -2, false), bedRoomNorth.width / 2], [new _Wall2.default(balconyNorthWest.depth, roomHeight, 'west', THREE.DoubleSide), balconyNorthWest.depth / -2], [new _Wall2.default(bedRoomNorth.depth - balconyNorthWest.depth, roomHeight, 'west', THREE.FrontSide), (bedRoomNorth.depth - balconyNorthWest.depth) / 2], [new _Wall2.default(bedRoomNorth.width, roomHeight, 'south', THREE.FrontSide, bedRoomNorth.door, bedRoomNorth.door.width / -2, true), bedRoomNorth.width / 2], [new _Wall2.default(bedRoomNorth.depth, roomHeight, 'east', THREE.DoubleSide), bedRoomNorth.depth / 2]]
+    walls: [[new _Wall2.default(bedRoomNorth.width, roomHeight, 'north', { all: 'fb', left: 'l' }, 0, 2, -1, balconyNorthEast.door, balconyNorthEast.door.width / -2, 0, false), bedRoomNorth.width / 2], [new _Wall2.default(balconyNorthWest.depth, roomHeight, 'west', 'fb', 0, 2, -1), balconyNorthWest.depth / -2], [new _Wall2.default(bedRoomNorth.depth - balconyNorthWest.depth, roomHeight, 'west', 'fb', 0, 1, -3), (bedRoomNorth.depth - balconyNorthWest.depth) / 2], [new _Wall2.default(bedRoomNorth.width, roomHeight, 'south', { all: 'fb', left: 'l' }, 0, 1, -3, bedRoomNorth.door, bedRoomNorth.door.width / -2, -0.5, true), bedRoomNorth.width / 2], [new _Wall2.default(bedRoomNorth.depth, roomHeight, 'east', 'fb', 0, 2, -1), bedRoomNorth.depth / 2]]
   },
   balconyEast: {
     height: balconyHeight,
     size: [balconyEast.width, balconyEast.depth],
     nextTo: ['bedRoomNorth', 'bedRoomEast'],
-    walls: [[new _Wall2.default(balconyEast.width, balconyHeight, 'north', THREE.DoubleSide), balconyEast.width / 2], [new _Wall2.default(balconyEast.depth, balconyHeight, 'east', THREE.DoubleSide), balconyEast.depth / 2], [new _Wall2.default(balconyEast.width, 0, 'south', THREE.FrontSide, balconyEast.door, balconyEast.door.width / -2, true), balconyEast.width / 2]]
+    walls: [[new _Wall2.default(balconyEast.width, balconyHeight, 'north', 'fb', 0, 2, -1), balconyEast.width / 2], [new _Wall2.default(balconyEast.depth, balconyHeight, 'east', 'fb', 0, 2, -1), balconyEast.depth / 2], [new _Wall2.default(balconyEast.width, 0, 'south', 'fb', 0, 1, -1, balconyEast.door, balconyEast.door.width / -2, 0.5, true), balconyEast.width / 2]]
   },
   balconyNorthEast: {
     height: balconyHeight,
     size: [balconyNorthEast.width, balconyNorthEast.depth],
     nextTo: ['drawingRoom', 'bedRoomNorth'],
-    walls: [[new _Wall2.default(balconyNorthEast.width, balconyHeight, 'north', THREE.DoubleSide), balconyNorthEast.width / 2], [new _Wall2.default(balconyNorthEast.depth, balconyHeight, 'west', THREE.DoubleSide), balconyNorthEast.depth / 2], [new _Wall2.default(balconyNorthEast.width, 0, 'south', THREE.FrontSide, balconyNorthEast.door, balconyNorthEast.door.width / 2, true), balconyNorthEast.width / 2], [new _Wall2.default(balconyNorthEast.depth, balconyHeight, 'east', THREE.DoubleSide), balconyNorthEast.depth / 2]]
+    walls: [[new _Wall2.default(balconyNorthEast.width, balconyHeight, 'north', 'fb', 0, 2, -1), balconyNorthEast.width / 2], [new _Wall2.default(balconyNorthEast.depth, balconyHeight, 'west', 'fb', 0, 2, -1), balconyNorthEast.depth / 2], [new _Wall2.default(balconyNorthEast.width, 0, 'south', 'fb', 0, 1, -1, balconyNorthEast.door, balconyNorthEast.door.width / 2, -1.5, true), balconyNorthEast.width / 2], [new _Wall2.default(balconyNorthEast.depth, balconyHeight, 'east', 'fb', 0, 2, -1), balconyNorthEast.depth / 2]]
   }
 };
 
