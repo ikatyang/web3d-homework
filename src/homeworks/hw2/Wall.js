@@ -113,7 +113,8 @@ export default class Wall extends THREE.Object3D {
         const doorPositionX = (width / -2) + (isNegative
           ? (width + doorPosition) - (singleDepth * 2)
           : doorPosition + (singleDepth * 2));
-        door.position.set(doorPositionX, (height / -2) + (door.height / 2), doorDepthDelta * singleDepth);
+        door.position.set(
+          doorPositionX, (height / -2) + (door.height / 2), doorDepthDelta * singleDepth);
         container.add(door);
       }
     }
