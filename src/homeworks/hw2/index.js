@@ -160,6 +160,18 @@ init(() => {
     }
   };
 
+  [
+    [0, 230],
+    [300, 230],
+    [-300, 230],
+    [75, -240],
+    [-80, -180],
+  ].forEach(([x, z]) => {
+    const light = new THREE.PointLight(0xffffff, 1);
+    light.position.set(x, 80, z);
+    scene.add(light);
+  });
+
   document.addEventListener('keydown', createKeyEvent(true), false);
   document.addEventListener('keyup', createKeyEvent(false), false);
 

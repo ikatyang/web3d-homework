@@ -42,6 +42,10 @@ export default class House extends THREE.Object3D {
 
       room.ground.roomName = roomName;
       grounds.push(room.ground);
+
+      const light = new THREE.PointLight(0xffffff, 0.2);
+      light.position.y = 60;
+      room.add(light);
     });
     const box = new THREE.Box3().setFromObject(container);
     container.position.sub(box.getCenter().setY(0));

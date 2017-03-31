@@ -9,7 +9,13 @@ const transparentMaterial = new THREE.MeshBasicMaterial({ transparent: true, opa
 const allSides = ['l', 'r', 'u', 'd', 'b', 'f'];
 const createMultiMaterial = (sides) => {
   const materials = [];
-  const material = new THREE.MeshBasicMaterial({ color: Math.floor(Math.random() * 0xffffff) });
+  const material = new THREE.MeshPhongMaterial({
+    color: new THREE.Color(
+      Math.random() * 0.3,
+      Math.random() * 0.3,
+      Math.random() * 0.3,
+    ),
+  });
   allSides.forEach((side) => {
     if (side === 'u' || side === 'd') {
       materials.push(blackMaterial);
