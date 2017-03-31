@@ -5,3 +5,4 @@ globals:
   $: false
   THREE: false
   dat: false
+  Stats: false

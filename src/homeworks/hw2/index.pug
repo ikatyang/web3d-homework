@@ -3,6 +3,7 @@ extends ../../templates/homework3D.pug
 append import
   script(src=`${resources}/libraries/threejs/PointerLockControls.js`)
   script(src=`${resources}/libraries/dat.gui/dat.gui.min.js`)
+  script(src=`${resources}/libraries/stats/stats.min.js`)
 
 append style
   style.
@@ -30,6 +31,12 @@ append style
       height: 40px;
       opacity: 0;
       transition: opacity 1s;
+    }
+
+    #stats {
+      position: absolute;
+      left: 0;
+      bottom: 0;
     }
 
 append body

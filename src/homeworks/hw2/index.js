@@ -61,8 +61,12 @@ viewports.forEach((viewport, index) => {
   gui.add(gcontrols, viewportName);
 });
 
+const stats = new Stats();
+stats.domElement.id = 'stats';
+document.body.appendChild(stats.domElement);
+
 let house;
-let intersects;
+let intersects = [];
 let pointerLockControls;
 let mouseEvent;
 let isFirst = true;
@@ -93,7 +97,7 @@ init(() => {
     mouseEvent = event;
   }, false);
   window.addEventListener('mousedown', () => {
-    if (intersects && intersects.length > 0) {
+    if (intersects.length > 0) {
       intersects[0].object.axis.toggle();
     }
   }, false);
@@ -148,6 +152,7 @@ init(() => {
 });
 
 (function animate() {
+  stats.update();
   const delta = clock.getDelta();
   if (!isFirst && gcontrols.controls === 'PointerLock') {
     if (pointerLockControls.enabled) {
