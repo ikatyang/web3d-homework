@@ -4,13 +4,14 @@ html
   head
     include ./templates/head.pug
     link(rel='stylesheet' href=`${resources}/libraries/jquery/jquery.mobile.min.css`)
+    link(rel='stylesheet' href=`${resources}/libraries/jquery/jqGifPreview/jqGifPreview.min.css`)
     script(src=`${resources}/libraries/jquery/jquery.min.js`)
-    script(src=`${resources}/libraries/jquery/jquery.lazyload.min.js`)
     script(src=`${resources}/libraries/jquery/jquery.mobile.min.js`)
+    script(src=`${resources}/libraries/jquery/jqGifPreview/jqGifPreview.min.js`)
     script.
       $.mobile.ajaxEnabled = false;
       $(function () {
-        $('img').lazyload();
+        $('img').jqGifPreview();
       });
     style.
       .ui-block {
@@ -39,4 +40,4 @@ html
             .ui-block(class=`ui-block-${blockIds[i % blockIds.length]}`)
               a.ui-btn.ui-corner-all(href=`homeworks/hw${homeworkId}/`)=`Homework ${homeworkId}`
               .ui-body.ui-body-a.ui-corner-all
-                img(data-original=`${resources}/demos/hw${homeworkId}.gif`)
+                img(src=`${resources}/demos/hw${homeworkId}.png` data-gif=`${resources}/demos/hw${homeworkId}.gif`)
