@@ -74,7 +74,7 @@ const aisle = {
 
 const bedRoomNorth = {
   width: 120,
-  depth: 120,
+  depth: (balconyNorthWest.depth + diningRoom.depth) - aisle.depth,
   door: new Door(doorWidthLarge, doorHeight, 'left', 1),
 };
 
