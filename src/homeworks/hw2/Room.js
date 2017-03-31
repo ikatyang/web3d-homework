@@ -28,31 +28,56 @@ export default class Room extends THREE.Object3D {
 
     walls.forEach((wall, index) => {
       const wallPosition = wallPositions[index];
-      const isNegative = wallPosition < 0 || 1 / wallPosition === -Infinity;
 
-      const wallPositionX = isNegative ? width + wallPosition : wallPosition;
-      const wallPositionZ = isNegative ? depth + wallPosition : wallPosition;
+      let wallPositionX;
+      let wallPositionZ;
+
+      if (typeof wallPosition === 'number') {
+        const isNegative = wallPosition < 0 || 1 / wallPosition === -Infinity;
+
+        wallPositionX = isNegative ? width + wallPosition : wallPosition;
+        wallPositionZ = isNegative ? depth + wallPosition : wallPosition;
+      } else {
+        wallPositionX = +wallPosition;
+        wallPositionZ = +wallPosition;
+      }
 
       switch (wall.direction) {
         case 'north':
           wall.position
             .set(width / -2, wall.height / 2, depth / -2)
             .add(new THREE.Vector3(wallPositionX, 0, 0));
+          if (wall.depthDelta) {
+            wall.position.add(new THREE.Vector3(0, 0, wall.depth / -2)
+              .multiplyScalar(wall.depthDelta));
+          }
           break;
         case 'west':
           wall.position
             .set(width / -2, wall.height / 2, depth / 2)
             .add(new THREE.Vector3(0, 0, -wallPositionZ));
+          if (wall.depthDelta) {
+            wall.position.add(new THREE.Vector3(wall.depth / -2, 0, 0)
+              .multiplyScalar(wall.depthDelta));
+          }
           break;
         case 'south':
           wall.position
             .set(width / 2, wall.height / 2, depth / 2)
             .add(new THREE.Vector3(-wallPositionX, 0, 0));
+          if (wall.depthDelta) {
+            wall.position.add(new THREE.Vector3(0, 0, wall.depth / 2)
+              .multiplyScalar(wall.depthDelta));
+          }
           break;
         case 'east':
           wall.position
             .set(width / 2, wall.height / 2, depth / -2)
             .add(new THREE.Vector3(0, 0, wallPositionZ));
+          if (wall.depthDelta) {
+            wall.position.add(new THREE.Vector3(wall.depth / 2, 0, 0)
+              .multiplyScalar(wall.depthDelta));
+          }
           break;
         default:
           throw new Error(`Unexpected direction: ${wall.direction}`);

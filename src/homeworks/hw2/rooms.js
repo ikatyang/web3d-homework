@@ -96,11 +96,11 @@ export default {
     size: [bedRoomWest.width, bedRoomWest.depth],
     nextTo: [null, null],
     walls: [
-      [new Wall(balconyWest.width, roomHeight, 'north', THREE.DoubleSide, balconyWest.door, balconyWest.door.width / 2, false), balconyWest.width / 2],
-      [new Wall(bedRoomWest.width - balconyWest.width, roomHeight, 'north', THREE.FrontSide), (bedRoomWest.width - balconyWest.width) / -2],
-      [new Wall(bedRoomWest.depth, roomHeight, 'west', THREE.DoubleSide), bedRoomWest.depth / 2],
-      [new Wall(bedRoomWest.width, roomHeight, 'south', THREE.DoubleSide), bedRoomWest.width / 2],
-      [new Wall(bedRoomWest.depth, roomHeight, 'east', THREE.FrontSide, bedRoomWest.door, bedRoomWest.door.width / 2, true), bedRoomWest.depth / 2],
+      [new Wall(balconyWest.width, roomHeight, 'north', 0, 2, -1, balconyWest.door, balconyWest.door.width / 2, false), balconyWest.width / 2],
+      [new Wall(bedRoomWest.width - balconyWest.width, roomHeight, 'north', 0, 1, -3), (bedRoomWest.width - balconyWest.width) / -2],
+      [new Wall(bedRoomWest.depth, roomHeight, 'west', 0, 2, -1), bedRoomWest.depth / 2],
+      [new Wall(bedRoomWest.width, roomHeight, 'south', 0, 2, -1), bedRoomWest.width / 2],
+      [new Wall(bedRoomWest.depth, roomHeight, 'east', 0, 1, -3, bedRoomWest.door, bedRoomWest.door.width / 2, true), bedRoomWest.depth / 2],
     ],
   },
   balconyWest: {
@@ -108,9 +108,9 @@ export default {
     size: [balconyWest.width, balconyWest.depth],
     nextTo: [null, 'bedRoomWest'],
     walls: [
-      [new Wall(balconyWest.width, balconyHeight, 'north', THREE.DoubleSide), balconyWest.width / 2],
-      [new Wall(balconyWest.depth, balconyHeight, 'west', THREE.DoubleSide), balconyWest.depth / 2],
-      [new Wall(balconyWest.width, 0, 'south', THREE.FrontSide, balconyWest.door, balconyWest.door.width / -2, true), -balconyWest.width / 2],
+      [new Wall(balconyWest.width, balconyHeight, 'north', 0, 2, -1), balconyWest.width / 2],
+      [new Wall(balconyWest.depth, balconyHeight, 'west', 0, 2, -1), balconyWest.depth / 2],
+      [new Wall(balconyWest.width, 0, 'south', 0, 1, -1, balconyWest.door, balconyWest.door.width / -2, true), -balconyWest.width / 2],
     ],
   },
   drawingRoom: {
@@ -118,9 +118,9 @@ export default {
     size: [drawingRoom.width, drawingRoom.depth],
     nextTo: ['bedRoomWest', null],
     walls: [
-      [new Wall(drawingRoom.depth, roomHeight, 'west', THREE.FrontSide, bedRoomWest.door, bedRoomWest.door.width / -2, false), drawingRoom.depth / 2],
-      [new Wall(drawingRoom.width, roomHeight, 'south', THREE.DoubleSide, drawingRoom.door, drawingRoom.door.width / 2, true), drawingRoom.width / 2],
-      [new Wall(drawingRoom.depth, roomHeight, 'east', THREE.FrontSide), drawingRoom.depth / 2],
+      [new Wall(drawingRoom.depth, roomHeight, 'west', 0, 1, 1, bedRoomWest.door, bedRoomWest.door.width / -2, false), drawingRoom.depth / 2],
+      [new Wall(drawingRoom.width, roomHeight, 'south', 0, 2, -1, drawingRoom.door, drawingRoom.door.width / 2, true), drawingRoom.width / 2],
+      [new Wall(drawingRoom.depth, roomHeight, 'east', 0, 1, 1), drawingRoom.depth / 2],
     ],
   },
   kitchen: {
@@ -128,9 +128,9 @@ export default {
     size: [kitchen.width, kitchen.depth],
     nextTo: ['balconyWest', 'drawingRoom'],
     walls: [
-      [new Wall(kitchen.width, roomHeight, 'north', THREE.DoubleSide), kitchen.width / 2],
-      [new Wall(kitchen.depth, roomHeight, 'west', THREE.DoubleSide), kitchen.depth / 2],
-      [new Wall(bedRoomWest.width - balconyWest.width, roomHeight, 'south', THREE.FrontSide), (bedRoomWest.width - balconyWest.width) / -2],
+      [new Wall(kitchen.width, roomHeight, 'north', 0, 2, -1), kitchen.width / 2],
+      [new Wall(kitchen.depth, roomHeight, 'west', 0, 2, -1), kitchen.depth / 2],
+      [new Wall(bedRoomWest.width - balconyWest.width, roomHeight, 'south', 0, 1, 1), (bedRoomWest.width - balconyWest.width) / -2],
     ],
   },
   balconyNorthWest: {
@@ -138,9 +138,9 @@ export default {
     size: [balconyNorthWest.width, balconyNorthWest.depth],
     nextTo: ['balconyWest', 'kitchen'],
     walls: [
-      [new Wall(balconyNorthWest.width, balconyHeight, 'north', THREE.DoubleSide), balconyNorthWest.width / 2],
-      [new Wall(balconyNorthWest.depth, balconyHeight, 'west', THREE.DoubleSide), balconyNorthWest.depth / 2],
-      [new Wall(balconyNorthWest.width, 0, 'south', THREE.FrontSide, balconyNorthWest.door, balconyNorthWest.door.width / 2, true), balconyNorthWest.width / 2],
+      [new Wall(balconyNorthWest.width, balconyHeight, 'north', 0, 2, -1), balconyNorthWest.width / 2],
+      [new Wall(balconyNorthWest.depth, balconyHeight, 'west', 0, 2, -1), balconyNorthWest.depth / 2],
+      [new Wall(balconyNorthWest.width, 0, 'south', 0, 1, -1, balconyNorthWest.door, balconyNorthWest.door.width / 2, true), balconyNorthWest.width / 2],
     ],
   },
   diningRoom: {
@@ -148,8 +148,8 @@ export default {
     size: [diningRoom.width, diningRoom.depth],
     nextTo: ['kitchen', 'drawingRoom'],
     walls: [
-      [new Wall(diningRoom.width, roomHeight, 'north', THREE.DoubleSide, balconyNorthWest.door, balconyNorthWest.door.width / -2, false), diningRoom.width / 2],
-      [new Wall(diningRoom.depth - aisle.depth, roomHeight, 'east', THREE.FrontSide), (diningRoom.depth - aisle.depth) / 2],
+      [new Wall(diningRoom.width, roomHeight, 'north', 0, 2, -1, balconyNorthWest.door, balconyNorthWest.door.width / -2, false), diningRoom.width / 2],
+      [new Wall(diningRoom.depth - aisle.depth, roomHeight, 'east', 0, 1, 1), (diningRoom.depth - aisle.depth) / 2],
     ],
   },
   shaft: {
@@ -157,10 +157,10 @@ export default {
     size: [shaft.width, shaft.depth],
     nextTo: ['drawingRoom', null],
     walls: [
-      [new Wall(shaft.width, roomHeight, 'north', THREE.FrontSide), shaft.width / 2],
-      [new Wall(shaft.depth, roomHeight, 'west', THREE.FrontSide), shaft.depth / 2],
-      [new Wall(shaft.width, roomHeight, 'south', THREE.DoubleSide), shaft.width / 2],
-      [new Wall(shaft.depth, roomHeight, 'east', THREE.FrontSide), shaft.depth / 2],
+      [new Wall(shaft.width, roomHeight, 'north', 0, 1, -1), shaft.width / 2],
+      [new Wall(shaft.depth, roomHeight, 'west', 0, 1, -3), shaft.depth / 2],
+      [new Wall(shaft.width, roomHeight, 'south', 0, 2, -1), shaft.width / 2],
+      [new Wall(shaft.depth, roomHeight, 'east', 0, 1, -1), shaft.depth / 2],
     ],
   },
   toiletSouthEast: {
@@ -168,10 +168,10 @@ export default {
     size: [toiletSouthEast.width, toiletSouthEast.depth],
     nextTo: ['shaft', null],
     walls: [
-      [new Wall(toiletSouthEast.width, roomHeight, 'north', THREE.FrontSide, toiletSouthEast.door, toiletSouthEast.door.width / -2, true), toiletSouthEast.width / 2],
-      [new Wall(toiletSouthEast.depth, roomHeight, 'west', THREE.FrontSide), toiletSouthEast.depth / 2],
-      [new Wall(toiletSouthEast.width, roomHeight, 'south', THREE.DoubleSide), toiletSouthEast.width / 2],
-      [new Wall(toiletSouthEast.depth, roomHeight, 'east', THREE.DoubleSide), toiletSouthEast.depth / 2],
+      [new Wall(toiletSouthEast.width, roomHeight, 'north', 0, 1, -1, toiletSouthEast.door, toiletSouthEast.door.width / -2, true), toiletSouthEast.width / 2],
+      [new Wall(toiletSouthEast.depth, roomHeight, 'west', 0, 1, -1), toiletSouthEast.depth / 2],
+      [new Wall(toiletSouthEast.width, roomHeight, 'south', 0, 2, -1), toiletSouthEast.width / 2],
+      [new Wall(toiletSouthEast.depth, roomHeight, 'east', 0, 2, -1), toiletSouthEast.depth / 2],
     ],
   },
   toiletSouth: {
@@ -179,10 +179,10 @@ export default {
     size: [toiletSouth.width, toiletSouth.depth],
     nextTo: ['drawingRoom', 'shaft'],
     walls: [
-      [new Wall(toiletSouth.width, roomHeight, 'north', THREE.DoubleSide, toiletSouth.door, toiletSouth.door.width / 2, true), toiletSouth.width / 2],
-      [new Wall(toiletSouth.depth, roomHeight, 'west', THREE.FrontSide), toiletSouth.depth / 2],
-      [new Wall(toiletSouth.width, roomHeight, 'south', THREE.FrontSide), toiletSouth.width / 2],
-      [new Wall(toiletSouth.depth, roomHeight, 'east', THREE.FrontSide), toiletSouth.depth / 2],
+      [new Wall(toiletSouth.width, roomHeight, 'north', 0, 2, -1, toiletSouth.door, toiletSouth.door.width / 2, true), toiletSouth.width / 2],
+      [new Wall(toiletSouth.depth, roomHeight, 'west', 0, 1, -3), toiletSouth.depth / 2],
+      [new Wall(toiletSouth.width, roomHeight, 'south', 0, 1, -1), toiletSouth.width / 2],
+      [new Wall(toiletSouth.depth, roomHeight, 'east', 0, 1, -1), toiletSouth.depth / 2],
     ],
   },
   bedRoomEast: {
@@ -190,12 +190,13 @@ export default {
     size: [bedRoomEast.width, bedRoomEast.depth],
     nextTo: ['toiletSouth', 'shaft'],
     walls: [
-      [new Wall(bedRoomEast.width - balconyEast.width, roomHeight, 'north', THREE.FrontSide), (bedRoomEast.width - balconyEast.width) / 2],
-      [new Wall(balconyEast.width, roomHeight, 'north', THREE.DoubleSide, balconyEast.door, balconyEast.door.width / 2, false), balconyEast.width / -2],
-      [new Wall(aisle.depth, roomHeight, 'west', THREE.DoubleSide, bedRoomEast.door, bedRoomEast.door.width / -2, true), aisle.depth / -2],
-      [new Wall(bedRoomEast.depth - aisle.depth, roomHeight, 'west', THREE.FrontSide), (bedRoomEast.depth - aisle.depth) / 2],
-      [new Wall(bedRoomEast.width, roomHeight, 'south', THREE.FrontSide, toiletSouthEast.door, toiletSouthEast.door.width / 2, false), bedRoomEast.width / 2],
-      [new Wall(bedRoomEast.depth, roomHeight, 'east', THREE.DoubleSide), bedRoomEast.depth / 2],
+      [new Wall(bedRoomEast.width - balconyEast.width, roomHeight, 'north', 0, 1, 1), (bedRoomEast.width - balconyEast.width) / 2],
+      [new Wall(balconyEast.width, roomHeight, 'north', 0, 2, 1, balconyEast.door, balconyEast.door.width / 2, false), balconyEast.width / -2],
+      [new Wall(aisle.depth, roomHeight, 'west', 0, 2, 0, bedRoomEast.door, bedRoomEast.door.width / -2, true), aisle.depth / -2],
+      [new Wall(bedRoomEast.depth - aisle.depth, roomHeight, 'west', 0, 1, -1), (bedRoomEast.depth - aisle.depth) / 2],
+      [new Wall(bedRoomEast.width, roomHeight, 'south', 0, 1, -1, toiletSouthEast.door, toiletSouthEast.door.width / 2, false), bedRoomEast.width / 2],
+      [new Wall(bedRoomEast.depth, roomHeight, 'east', 0, 2, -1), bedRoomEast.depth / 2],
+      [new Wall(Wall.singleDepth * 2, roomHeight - balconyHeight, 'east', balconyHeight, 2, -1), `-${Wall.singleDepth}`],
     ],
   },
   aisle: {
@@ -203,7 +204,7 @@ export default {
     size: [aisle.width, aisle.depth],
     nextTo: ['drawingRoom', 'toiletSouth'],
     walls: [
-      [new Wall(aisle.width, roomHeight, 'north', THREE.FrontSide, bedRoomNorth.door, bedRoomNorth.door.width / 2, false), aisle.width / 2],
+      [new Wall(aisle.width, roomHeight, 'north', 0, 1, 1, bedRoomNorth.door, bedRoomNorth.door.width / 2, false), aisle.width / 2],
     ],
   },
   bedRoomNorth: {
@@ -211,11 +212,11 @@ export default {
     size: [bedRoomNorth.width, bedRoomNorth.depth],
     nextTo: ['drawingRoom', 'bedRoomEast'],
     walls: [
-      [new Wall(bedRoomNorth.width, roomHeight, 'north', THREE.DoubleSide, balconyNorthEast.door, balconyNorthEast.door.width / -2, false), bedRoomNorth.width / 2],
-      [new Wall(balconyNorthWest.depth, roomHeight, 'west', THREE.DoubleSide), balconyNorthWest.depth / -2],
-      [new Wall(bedRoomNorth.depth - balconyNorthWest.depth, roomHeight, 'west', THREE.FrontSide), (bedRoomNorth.depth - balconyNorthWest.depth) / 2],
-      [new Wall(bedRoomNorth.width, roomHeight, 'south', THREE.FrontSide, bedRoomNorth.door, bedRoomNorth.door.width / -2, true), bedRoomNorth.width / 2],
-      [new Wall(bedRoomNorth.depth, roomHeight, 'east', THREE.DoubleSide), bedRoomNorth.depth / 2],
+      [new Wall(bedRoomNorth.width, roomHeight, 'north', 0, 2, -1, balconyNorthEast.door, balconyNorthEast.door.width / -2, false), bedRoomNorth.width / 2],
+      [new Wall(balconyNorthWest.depth, roomHeight, 'west', 0, 2, -1), balconyNorthWest.depth / -2],
+      [new Wall(bedRoomNorth.depth - balconyNorthWest.depth, roomHeight, 'west', 0, 1, -3), (bedRoomNorth.depth - balconyNorthWest.depth) / 2],
+      [new Wall(bedRoomNorth.width, roomHeight, 'south', 0, 1, -3, bedRoomNorth.door, bedRoomNorth.door.width / -2, true), bedRoomNorth.width / 2],
+      [new Wall(bedRoomNorth.depth, roomHeight, 'east', 0, 2, -1), bedRoomNorth.depth / 2],
     ],
   },
   balconyEast: {
@@ -223,9 +224,9 @@ export default {
     size: [balconyEast.width, balconyEast.depth],
     nextTo: ['bedRoomNorth', 'bedRoomEast'],
     walls: [
-      [new Wall(balconyEast.width, balconyHeight, 'north', THREE.DoubleSide), balconyEast.width / 2],
-      [new Wall(balconyEast.depth, balconyHeight, 'east', THREE.DoubleSide), balconyEast.depth / 2],
-      [new Wall(balconyEast.width, 0, 'south', THREE.FrontSide, balconyEast.door, balconyEast.door.width / -2, true), balconyEast.width / 2],
+      [new Wall(balconyEast.width, balconyHeight, 'north', 0, 2, -1), balconyEast.width / 2],
+      [new Wall(balconyEast.depth, balconyHeight, 'east', 0, 2, -1), balconyEast.depth / 2],
+      [new Wall(balconyEast.width, 0, 'south', 0, 1, -1, balconyEast.door, balconyEast.door.width / -2, true), balconyEast.width / 2],
     ],
   },
   balconyNorthEast: {
@@ -233,10 +234,10 @@ export default {
     size: [balconyNorthEast.width, balconyNorthEast.depth],
     nextTo: ['drawingRoom', 'bedRoomNorth'],
     walls: [
-      [new Wall(balconyNorthEast.width, balconyHeight, 'north', THREE.DoubleSide), balconyNorthEast.width / 2],
-      [new Wall(balconyNorthEast.depth, balconyHeight, 'west', THREE.DoubleSide), balconyNorthEast.depth / 2],
-      [new Wall(balconyNorthEast.width, 0, 'south', THREE.FrontSide, balconyNorthEast.door, balconyNorthEast.door.width / 2, true), balconyNorthEast.width / 2],
-      [new Wall(balconyNorthEast.depth, balconyHeight, 'east', THREE.DoubleSide), balconyNorthEast.depth / 2],
+      [new Wall(balconyNorthEast.width, balconyHeight, 'north', 0, 2, -1), balconyNorthEast.width / 2],
+      [new Wall(balconyNorthEast.depth, balconyHeight, 'west', 0, 2, -1), balconyNorthEast.depth / 2],
+      [new Wall(balconyNorthEast.width, 0, 'south', 0, 1, -1, balconyNorthEast.door, balconyNorthEast.door.width / 2, true), balconyNorthEast.width / 2],
+      [new Wall(balconyNorthEast.depth, balconyHeight, 'east', 0, 2, -1), balconyNorthEast.depth / 2],
     ],
   },
 };
