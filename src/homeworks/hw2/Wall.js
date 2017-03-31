@@ -48,10 +48,11 @@ export default class Wall extends THREE.Object3D {
    * @param {number} depthDelta
    * @param {Door} door
    * @param {number} doorPosition
+   * @param {number} doorDepthDelta
    * @param {boolean} holdDoor
    */
   constructor(width, height, direction, sides, bottom,
-    depthCount, depthDelta, door, doorPosition, holdDoor) {
+    depthCount, depthDelta, door, doorPosition, doorDepthDelta, holdDoor) {
     super();
 
     const wallSides = {
@@ -109,8 +110,10 @@ export default class Wall extends THREE.Object3D {
       }
 
       if (holdDoor) {
-        const doorPositionX = (width / -2) + (isNegative ? width + doorPosition : doorPosition);
-        door.position.set(doorPositionX, (height / -2) + (door.height / 2), 0);
+        const doorPositionX = (width / -2) + (isNegative
+          ? (width + doorPosition) - (singleDepth * 2)
+          : doorPosition + (singleDepth * 2));
+        door.position.set(doorPositionX, (height / -2) + (door.height / 2), doorDepthDelta * singleDepth);
         container.add(door);
       }
     }
