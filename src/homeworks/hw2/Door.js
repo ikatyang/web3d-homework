@@ -13,7 +13,7 @@ export default class Door extends THREE.Object3D {
 
     const mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(width, height),
-      new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
+      new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true, opacity: 0.5 }));
 
     mesh.position.x = (width / 2) * (axisPosName === 'left' ? -1 : 1);
     container.add(mesh);
