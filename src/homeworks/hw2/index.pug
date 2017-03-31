@@ -58,6 +58,14 @@ append style
       margin-top: 0.5em;
     }
 
+    #plan2D {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      margin: 0.5em;
+      color: yellow;
+    }
+
 append body
   #minimap
     .info
@@ -72,3 +80,4 @@ append body
     #instructions
       h1='Click to Start'
       p='(W, A, S, D = Move, MOUSE = Look arround)'
+  a#plan2D(href=`${resources}/images/plan2D.png`)='2D Plan'
