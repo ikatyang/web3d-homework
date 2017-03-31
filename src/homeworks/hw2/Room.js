@@ -21,8 +21,7 @@ export default class Room extends THREE.Object3D {
     super();
 
     const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(width, depth),
-      new THREE.MeshNormalMaterial());
+      new THREE.PlaneGeometry(width, depth));
     ground.rotation.x = Math.PI / -2;
     this.add(ground);
 

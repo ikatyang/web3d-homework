@@ -21,6 +21,11 @@ const collisionRaycaster = new THREE.Raycaster(
 
 const pointerLockCamera = orbitCamera.clone();
 
+const minimapSize = 200;
+const minimapCamera = new THREE.OrthographicCamera(
+  minimapSize / 2, minimapSize / -2, minimapSize / -2, minimapSize / 2);
+minimapCamera.rotation.x = Math.PI / -2;
+
 const gui = new dat.GUI();
 gui.close();
 gui.add(gcontrols, 'speed', 0, 200);
@@ -83,8 +88,14 @@ init(() => {
   scene.add(orbitCamera);
 
   pointerLockControls = new THREE.PointerLockControls(pointerLockCamera);
-  pointerLockControls.getObject().position.copy(origin);
-  scene.add(pointerLockControls.getObject());
+  const pointerLockObject = pointerLockControls.getObject();
+  pointerLockObject.position.copy(origin);
+  scene.add(pointerLockObject);
+
+  const character = new THREE.Mesh(
+    new THREE.SphereGeometry(10, 16, 16),
+    new THREE.MeshBasicMaterial({ color: 'red' }));
+  pointerLockObject.add(character);
 
   const gridHelper = new THREE.GridHelper(450, 45, 0xffffff, 0xffffff);
   gridHelper.position.y = 0.1;
@@ -149,15 +160,24 @@ init(() => {
 
   document.addEventListener('keydown', createKeyEvent(true), false);
   document.addEventListener('keyup', createKeyEvent(false), false);
+
+  renderer.autoClear = false;
 });
 
 (function animate() {
   stats.update();
+
+  const pointerLockObject = pointerLockControls.getObject();
+
+  renderer.setScissorTest(true);
+  renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+  renderer.setScissor(0, 0, window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x888888);
+  renderer.clear();
+
   const delta = clock.getDelta();
   if (!isFirst && gcontrols.controls === 'PointerLock') {
     if (pointerLockControls.enabled) {
-      const pointerLockObject = pointerLockControls.getObject();
-
       const direction = new THREE.Vector3();
       if (pressed.w) {
         direction.z -= 1;
@@ -210,5 +230,18 @@ init(() => {
     orbitControls.update();
     renderer.render(scene, orbitCamera);
   }
+
+  minimapCamera.position.copy(pointerLockObject.position).setY(300);
+
+  const direction = pointerLockControls.getDirection(new THREE.Vector3(0, 0, -1));
+  minimapCamera.rotation.z = Math.atan2(direction.x, direction.z);
+
+  renderer.setViewport(0, window.innerHeight - minimapSize, minimapSize, minimapSize);
+  renderer.setScissor(0, window.innerHeight - minimapSize, minimapSize, minimapSize);
+  renderer.setClearColor(0xaa8888);
+  renderer.clear();
+  renderer.render(scene, minimapCamera);
+  renderer.setScissorTest(false);
+
   requestAnimationFrame(animate);
 }());
