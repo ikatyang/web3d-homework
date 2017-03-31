@@ -88,6 +88,7 @@ export default class Room extends THREE.Object3D {
     this.height = height;
     this.depth = depth;
     this.walls = walls;
+    this.ground = ground;
   }
 
 }

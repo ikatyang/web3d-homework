@@ -39,7 +39,30 @@ append style
       bottom: 0;
     }
 
+    #minimap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 200px;
+      border: 1px solid yellow;
+      border-top: 0;
+      border-left: 0;
+    }
+
+    #minimap .info {
+      position: relative;
+      top: 100%;
+      width: 100%;
+      text-align: center;
+      margin-top: 0.5em;
+    }
+
 append body
+  #minimap
+    .info
+      #position
+      #location
   #cursor-icons
     .center
       img.cursor-icon#pointer(src=`${resources}/images/cursor-pointer.png`)

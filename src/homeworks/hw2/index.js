@@ -18,6 +18,8 @@ const pointerRaycaster = new THREE.Raycaster(
   undefined, undefined, undefined, clickDistance);
 const collisionRaycaster = new THREE.Raycaster(
   undefined, undefined, undefined, collisionDistance);
+const groundRaycaster = new THREE.Raycaster(
+  undefined, undefined, undefined, 100);
 
 const pointerLockCamera = orbitCamera.clone();
 
@@ -230,6 +232,16 @@ init(() => {
     orbitControls.update();
     renderer.render(scene, orbitCamera);
   }
+
+  groundRaycaster.set(pointerLockObject.position, new THREE.Vector3(0, -1, 0));
+  const intersectGrounds = groundRaycaster.intersectObjects(house.grounds);
+  const roomName = (intersectGrounds.length === 0) ? 'outside' :
+    intersectGrounds[0].object.roomName;
+  const characterPos = pointerLockObject.position;
+  document.getElementById('position').innerHTML =
+    `(${Math.floor(characterPos.x)}, ${Math.floor(characterPos.z)})`;
+  document.getElementById('location').innerHTML =
+    roomName[0].toUpperCase() + roomName.slice(1).replace(/[A-Z]/g, x => ` ${x}`);
 
   minimapCamera.position.copy(pointerLockObject.position).setY(300);
 

@@ -13,6 +13,7 @@ export default class House extends THREE.Object3D {
     const rooms = {};
     const doors = [];
     const borders = [];
+    const grounds = [];
 
     Object.keys(roomConfigs).forEach((roomName) => {
       const roomConfig = roomConfigs[roomName];
@@ -38,6 +39,9 @@ export default class House extends THREE.Object3D {
         }
         borders.push(...wall.container.children);
       });
+
+      room.ground.roomName = roomName;
+      grounds.push(room.ground);
     });
     const box = new THREE.Box3().setFromObject(container);
     container.position.sub(box.getCenter().setY(0));
@@ -46,6 +50,7 @@ export default class House extends THREE.Object3D {
     this.rooms = rooms;
     this.doors = doors;
     this.borders = borders;
+    this.grounds = grounds;
   }
 
 }
