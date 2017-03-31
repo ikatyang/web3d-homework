@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Web3D Homework</title>
     <link rel="stylesheet" href="resources/libraries/jquery/jquery.mobile.min.css">
+    <link rel="stylesheet" href="resources/libraries/jquery/jqGifPreview/jqGifPreview.min.css">
     <script src="resources/libraries/jquery/jquery.min.js"></script>
-    <script src="resources/libraries/jquery/jquery.lazyload.min.js"></script>
     <script src="resources/libraries/jquery/jquery.mobile.min.js"></script>
+    <script src="resources/libraries/jquery/jqGifPreview/jqGifPreview.min.js"></script>
     <script>
       $.mobile.ajaxEnabled = false;
       $(function () {
-        $('img').lazyload();
+        $('img').jqGifPreview();
       });
     </script>
     <style>
@@ -40,10 +41,10 @@
       <div data-role="content">
         <div class="ui-grid-b ui-responsive">
           <div class="ui-block ui-block-a"><a class="ui-btn ui-corner-all" href="homeworks/hw1/">Homework 1</a>
-            <div class="ui-body ui-body-a ui-corner-all"><img data-original="resources/demos/hw1.gif"></div>
+            <div class="ui-body ui-body-a ui-corner-all"><img src="resources/demos/hw1.png" data-gif="resources/demos/hw1.gif"></div>
           </div>
           <div class="ui-block ui-block-b"><a class="ui-btn ui-corner-all" href="homeworks/hw2/">Homework 2</a>
-            <div class="ui-body ui-body-a ui-corner-all"><img data-original="resources/demos/hw2.gif"></div>
+            <div class="ui-body ui-body-a ui-corner-all"><img src="resources/demos/hw2.png" data-gif="resources/demos/hw2.gif"></div>
           </div>
         </div>
       </div>
