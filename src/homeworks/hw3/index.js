@@ -3,6 +3,9 @@ import { init, animate, controls, scene, camera, renderer } from '../../template
 import Base from './Base';
 import Painting from './Painting';
 
+let picked = null;
+const pickables = [];
+
 const spotlights = [];
 const addSpotlight = (intensity, position) => {
   const spotlight = new THREE.SpotLight(0xffffff, intensity);
@@ -103,7 +106,10 @@ init(() => {
 
   const jsonLoader = new THREE.JSONLoader();
   jsonLoader.load(`${resources}/models/teapot.json`, (geometry) => {
-    const teapot = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x1234ff, side: THREE.DoubleSide }));
+    const teapot = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
+      color: 0x1234ff,
+      side: THREE.DoubleSide,
+    }));
     teapot.castShadow = true;
     teapot.scale.set(5, 5, 5);
     teapot.rotation.set(0, Math.PI / -2, 0);
@@ -113,6 +119,9 @@ init(() => {
     base.castShadow = true;
     base.receiveShadow = true;
     scene.add(base);
+
+    pickables.push(base);
+    base.description = 'The Great Teapot';
 
     spotlights[0].target = base;
   });
@@ -127,6 +136,9 @@ init(() => {
     base.receiveShadow = true;
     scene.add(base);
 
+    pickables.push(base);
+    base.description = 'The Great Train';
+
     spotlights[1].target = base;
   });
 
@@ -138,6 +150,9 @@ init(() => {
     painting.position.set(0, roomSize.y / 2, (roomSize.z / -2) + (paintingTube / 2));
     scene.add(painting);
 
+    pickables.push(painting);
+    painting.description = 'The Great Lena';
+
     spotlights[2].target = painting;
   });
 
@@ -147,11 +162,33 @@ init(() => {
     painting.position.set(0, roomSize.y / 2, (roomSize.z / 2) + (paintingTube / -2));
     scene.add(painting);
 
+    pickables.push(painting);
+    painting.description = 'The Great Danboard';
+
     spotlights[3].target = painting;
   });
+
+  const getPickable = child => (
+    pickables.indexOf(child) !== -1
+      ? child
+      : getPickable(child.parent)
+  );
+
+  window.addEventListener('mousemove', (event) => {
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(
+      ((event.clientX / window.innerWidth) * 2) - 1,
+      ((event.clientY / window.innerHeight) * -2) + 1,
+    ), camera);
+    const intersects = raycaster.intersectObjects(pickables, true);
+    picked = (intersects.length > 0)
+      ? getPickable(intersects[0].object) : null;
+  }, false);
 });
 
 animate(() => {
   controls.update();
   spotlights.forEach(spotlight => spotlight.helper.update());
+  document.getElementById('description').innerText =
+    picked ? picked.description : '';
 });
