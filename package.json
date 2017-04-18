@@ -11,6 +11,7 @@
     "postbuild": "npm run copy-resources",
     "build-only": "node ./scripts/build.js",
     "preview": "browser-refresh ./scripts/server.js",
+    "precopy-resources": "rm -rf ./gh-pages/resources",
     "copy-resources": "cp -rf ./src/resources ./gh-pages/resources",
     "watch": "nodemon --watch ./src/homeworks ./scripts/build.js -e js,pug"
   },
