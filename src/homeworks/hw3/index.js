@@ -70,7 +70,7 @@ const createBench = () => {
 init(() => {
   renderer.shadowMap.enabled = true;
 
-  camera.position.set(0, 200, 200);
+  camera.position.set(200, 120, 300);
   scene.add(camera);
 
   const roomSize = new THREE.Vector3(400, 200, 600);
@@ -90,6 +90,7 @@ init(() => {
   scene.add(light);
 
   const gui = new dat.GUI();
+  gui.close();
 
   addSpotlight(0.8, new THREE.Vector3(roomSize.x / -2, roomSize.y, 0));
   addSpotlight(0.8, new THREE.Vector3(roomSize.x / 2, roomSize.y, 0));
