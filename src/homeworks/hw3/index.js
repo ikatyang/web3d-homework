@@ -18,6 +18,24 @@ const addSpotlight = (intensity, position) => {
   scene.add(spotlight);
 };
 
+const createRoomMaterial = () => {
+  const wallMaterial = new THREE.MeshPhongMaterial({
+    side: THREE.BackSide,
+  });
+  const groundMaterial = new THREE.MeshPhongMaterial({
+    side: THREE.BackSide,
+    map: new THREE.TextureLoader().load(`${resources}/images/wood.jpg`),
+  });
+  return new THREE.MultiMaterial([
+    wallMaterial,
+    wallMaterial,
+    wallMaterial,
+    groundMaterial,
+    wallMaterial,
+    wallMaterial,
+  ]);
+};
+
 init(() => {
   camera.position.set(0, 200, 200);
   scene.add(camera);
@@ -25,7 +43,7 @@ init(() => {
   const roomSize = new THREE.Vector3(400, 200, 600);
   const room = new THREE.Mesh(
     new THREE.BoxGeometry(roomSize.x, roomSize.y, roomSize.z),
-    new THREE.MeshPhongMaterial({ side: THREE.BackSide }));
+    createRoomMaterial());
   room.position.set(0, roomSize.y / 2, 0);
   scene.add(room);
 
@@ -54,7 +72,7 @@ init(() => {
   });
 
   const objectLoader = new THREE.ObjectLoader();
-  objectLoader.load(`${resources}/models/toy-train/toy-train.json`, (toyTrain) => {
+  objectLoader.load(`${resources}/models/toy-train.json`, (toyTrain) => {
     toyTrain.scale.set(5, 5, 5);
 
     const base = new Base(toyTrain, 50, toyTrainSize, 30, toyTrainSize);
