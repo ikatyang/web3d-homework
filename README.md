@@ -26,6 +26,20 @@ npm run build
 npm run preview
 ```
 
+#### Watch
+
+all homeworks
+
+```sh
+npm run watch
+```
+
+specified homework
+
+```sh
+npm run watch -- hwX
+```
+
 ## Structure
 
 ```sh
