@@ -36,6 +36,31 @@ const createRoomMaterial = () => {
   ]);
 };
 
+const createBench = () => {
+  const bench = new THREE.Object3D();
+  const material = new THREE.MeshPhongMaterial({ color: 0x12ff34 });
+
+  const topHeight = 10;
+  const bottomHeight = 20;
+
+  const width = 30;
+  const depth = 200;
+
+  const delta = 10;
+
+  const bottom = new THREE.Mesh(
+    new THREE.BoxGeometry(width, bottomHeight, depth), material);
+  bottom.position.set(0, bottomHeight / 2, 0);
+  bench.add(bottom);
+
+  const top = new THREE.Mesh(
+    new THREE.BoxGeometry(width + delta, topHeight, depth + delta), material);
+  top.position.set(0, bottomHeight + (topHeight / 2), 0);
+  bench.add(top);
+
+  return bench;
+};
+
 init(() => {
   camera.position.set(0, 200, 200);
   scene.add(camera);
@@ -46,6 +71,9 @@ init(() => {
     createRoomMaterial());
   room.position.set(0, roomSize.y / 2, 0);
   scene.add(room);
+
+  const bench = createBench();
+  scene.add(bench);
 
   const light = new THREE.PointLight(0xffffff, 0.7);
   light.position.set(0, roomSize.y, 0);
