@@ -47,7 +47,7 @@ init(() => {
   room.position.set(0, roomSize.y / 2, 0);
   scene.add(room);
 
-  const light = new THREE.PointLight(0xffffff, 0.2);
+  const light = new THREE.PointLight(0xffffff, 0.7);
   light.position.set(0, roomSize.y, 0);
   scene.add(light);
 
@@ -63,6 +63,7 @@ init(() => {
   jsonLoader.load(`${resources}/models/teapot.json`, (geometry) => {
     const teapot = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x1234ff }));
     teapot.scale.set(5, 5, 5);
+    teapot.rotation.set(0, Math.PI / -2, 0);
 
     const base = new Base(teapot, 50, teapotSize, 30, teapotSize);
     base.position.set((roomSize.x / 2) + (teapotSize / -2), 0, 0);
