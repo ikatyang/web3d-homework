@@ -14,6 +14,7 @@ const addSpotlight = (intensity, position) => {
 
   const spotlightHelper = new THREE.SpotLightHelper(spotlight);
   spotlight.helper = spotlightHelper;
+  spotlightHelper.visible = false;
   scene.add(spotlightHelper);
 
   spotlights.push(spotlight);
@@ -85,10 +86,17 @@ init(() => {
   light.position.set(0, roomSize.y, 0);
   scene.add(light);
 
+  const gui = new dat.GUI();
+
   addSpotlight(0.8, new THREE.Vector3(roomSize.x / -2, roomSize.y, 0));
   addSpotlight(0.8, new THREE.Vector3(roomSize.x / 2, roomSize.y, 0));
   addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, 0));
   addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, 0));
+
+  spotlights.forEach((spotlight, index) => {
+    gui.add(spotlight, 'visible').name(`Switch ${index}`);
+    gui.add(spotlight.helper, 'visible').name(`Helper ${index}`);
+  });
 
   const teapotSize = 40;
   const toyTrainSize = 40;
