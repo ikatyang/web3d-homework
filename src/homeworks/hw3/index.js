@@ -1,5 +1,5 @@
 import resources from '../../templates/resources';
-import { init, animate, controls, scene, camera } from '../../templates/three3D';
+import { init, animate, controls, scene, camera, renderer } from '../../templates/three3D';
 import Base from './Base';
 import Painting from './Painting';
 
@@ -9,6 +9,8 @@ const addSpotlight = (intensity, position) => {
   spotlight.penumbra = 0.5;
   spotlight.angle = 0.3;
   spotlight.position.copy(position);
+
+  spotlight.castShadow = true;
 
   const spotlightHelper = new THREE.SpotLightHelper(spotlight);
   spotlight.helper = spotlightHelper;
@@ -62,6 +64,8 @@ const createBench = () => {
 };
 
 init(() => {
+  renderer.shadowMap.enabled = true;
+
   camera.position.set(0, 200, 200);
   scene.add(camera);
 
@@ -70,9 +74,11 @@ init(() => {
     new THREE.BoxGeometry(roomSize.x, roomSize.y, roomSize.z),
     createRoomMaterial());
   room.position.set(0, roomSize.y / 2, 0);
+  room.receiveShadow = true;
   scene.add(room);
 
   const bench = createBench();
+  bench.castShadow = true;
   scene.add(bench);
 
   const light = new THREE.PointLight(0xffffff, 0.7);
@@ -89,12 +95,15 @@ init(() => {
 
   const jsonLoader = new THREE.JSONLoader();
   jsonLoader.load(`${resources}/models/teapot.json`, (geometry) => {
-    const teapot = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x1234ff }));
+    const teapot = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x1234ff, side: THREE.DoubleSide }));
+    teapot.castShadow = true;
     teapot.scale.set(5, 5, 5);
     teapot.rotation.set(0, Math.PI / -2, 0);
 
     const base = new Base(teapot, 50, teapotSize, 30, teapotSize);
-    base.position.set((roomSize.x / 2) + (teapotSize / -2), 0, 0);
+    base.position.set(((roomSize.x / 2) + (teapotSize / -2)) - 0.1, 0, 0);
+    base.castShadow = true;
+    base.receiveShadow = true;
     scene.add(base);
 
     spotlights[0].target = base;
@@ -105,7 +114,9 @@ init(() => {
     toyTrain.scale.set(5, 5, 5);
 
     const base = new Base(toyTrain, 50, toyTrainSize, 30, toyTrainSize);
-    base.position.set((roomSize.x / -2) + (toyTrainSize / 2), 0, 0);
+    base.position.set((roomSize.x / -2) + (toyTrainSize / 2) + 0.1, 0, 0);
+    base.castShadow = true;
+    base.receiveShadow = true;
     scene.add(base);
 
     spotlights[1].target = base;

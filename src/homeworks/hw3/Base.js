@@ -22,6 +22,7 @@ export default class Base extends THREE.Object3D {
       new THREE.BoxGeometry(baseWidth, baseHeight, baseDepth),
       new THREE.MeshPhongMaterial({ color: 'gray' }));
     base.position.set(0, baseHeight / 2, 0);
+    base.receiveShadow = true;
     this.add(base);
 
     const mirrorHeight = Math.max(artworkSize.y, minHeight);
@@ -33,7 +34,7 @@ export default class Base extends THREE.Object3D {
         opacity: 0.2,
         color: 'white',
       }));
-    mirror.position.set(0, baseHeight + (mirrorHeight / 2), 0);
+    mirror.position.set(0, baseHeight + (mirrorHeight / 2) + 0.1, 0);
     this.add(mirror);
 
     artwork.position.set(
