@@ -2,13 +2,14 @@ import resources from '../../templates/resources';
 import { init, animate, controls, scene, camera, renderer } from '../../templates/three3D';
 import Base from './Base';
 import Painting from './Painting';
+import SpotLight from './SpotLight';
 
 let picked = null;
 const pickables = [];
 
 const spotlights = [];
 const addSpotlight = (intensity, position) => {
-  const spotlight = new THREE.SpotLight(0xffffff, intensity);
+  const spotlight = new SpotLight(5, 20, 0xffffff, intensity);
   spotlight.penumbra = 0.5;
   spotlight.angle = 0.3;
   spotlight.position.copy(position);
@@ -94,11 +95,11 @@ init(() => {
 
   addSpotlight(0.8, new THREE.Vector3(roomSize.x / -2, roomSize.y, 0));
   addSpotlight(0.8, new THREE.Vector3(roomSize.x / 2, roomSize.y, 0));
-  addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, 0));
-  addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, 0));
+  addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, -100));
+  addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, 100));
 
   spotlights.forEach((spotlight, index) => {
-    gui.add(spotlight, 'visible').name(`Switch ${index}`);
+    gui.add(spotlight, 'switch').name(`Switch ${index}`);
     gui.add(spotlight.helper, 'visible').name(`Helper ${index}`);
   });
 
@@ -124,7 +125,7 @@ init(() => {
     pickables.push(base);
     base.description = 'The Great Teapot';
 
-    spotlights[0].target = base;
+    spotlights[0].lookTarget(base);
   });
 
   const objectLoader = new THREE.ObjectLoader();
@@ -140,7 +141,7 @@ init(() => {
     pickables.push(base);
     base.description = 'The Great Train';
 
-    spotlights[1].target = base;
+    spotlights[1].lookTarget(base);
   });
 
   const paintingTube = 2;
@@ -154,7 +155,7 @@ init(() => {
     pickables.push(painting);
     painting.description = 'The Great Lena';
 
-    spotlights[2].target = painting;
+    spotlights[2].lookTarget(painting);
   });
 
   textureLoader.load(`${resources}/images/danboard.png`, (texture) => {
@@ -166,7 +167,7 @@ init(() => {
     pickables.push(painting);
     painting.description = 'The Great Danboard';
 
-    spotlights[3].target = painting;
+    spotlights[3].lookTarget(painting);
   });
 
   const getPickable = child => (
