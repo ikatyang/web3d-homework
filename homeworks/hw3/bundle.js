@@ -122,6 +122,95 @@ exports.default = Painting;
 },{}],3:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SpotLight = function (_THREE$SpotLight) {
+  _inherits(SpotLight, _THREE$SpotLight);
+
+  function SpotLight(radius, height) {
+    var _ref;
+
+    _classCallCheck(this, SpotLight);
+
+    for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      args[_key - 2] = arguments[_key];
+    }
+
+    var _this = _possibleConstructorReturn(this, (_ref = SpotLight.__proto__ || Object.getPrototypeOf(SpotLight)).call.apply(_ref, [this].concat(args)));
+
+    _this.rawSwitch = true;
+    _this.switchOnColor = 'white';
+    _this.switchOffColor = 'black';
+
+    var container = new THREE.Object3D();
+    _this.add(container);
+
+    var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, height, 16, 1, true), new THREE.MeshPhongMaterial({ color: 'white' }));
+    cylinder.rotation.set(Math.PI / 2, 0, 0);
+    cylinder.position.set(0, 0, height / 2);
+    container.add(cylinder);
+
+    var front = new THREE.Mesh(new THREE.CircleGeometry(radius, 16), new THREE.MeshBasicMaterial({ color: _this.switchOnColor }));
+    front.position.set(0, 0, height);
+    container.add(front);
+
+    _this.wrapper = container;
+    _this.frontMaterial = front.material;
+    return _this;
+  }
+
+  _createClass(SpotLight, [{
+    key: 'lookTarget',
+    value: function lookTarget(object) {
+      this.target = object;
+      this.wrapper.lookAt(this.worldToLocal(object.position.clone()));
+    }
+  }, {
+    key: 'switchOn',
+    value: function switchOn() {
+      this.intensity = this.originalIntensity;
+      this.frontMaterial.color.setStyle(this.switchOnColor);
+    }
+  }, {
+    key: 'switchOff',
+    value: function switchOff() {
+      this.originalIntensity = this.intensity;
+      this.intensity = 0;
+      this.frontMaterial.color.setStyle(this.switchOffColor);
+    }
+  }, {
+    key: 'switch',
+    get: function get() {
+      return this.rawSwitch;
+    },
+    set: function set(rawSwitch) {
+      this.rawSwitch = rawSwitch;
+      if (rawSwitch) {
+        this.switchOn();
+      } else {
+        this.switchOff();
+      }
+    }
+  }]);
+
+  return SpotLight;
+}(THREE.SpotLight);
+
+exports.default = SpotLight;
+
+},{}],4:[function(require,module,exports){
+'use strict';
+
 var _resources = require('../../templates/resources');
 
 var _resources2 = _interopRequireDefault(_resources);
@@ -136,6 +225,10 @@ var _Painting = require('./Painting');
 
 var _Painting2 = _interopRequireDefault(_Painting);
 
+var _SpotLight = require('./SpotLight');
+
+var _SpotLight2 = _interopRequireDefault(_SpotLight);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var picked = null;
@@ -143,7 +236,7 @@ var pickables = [];
 
 var spotlights = [];
 var addSpotlight = function addSpotlight(intensity, position) {
-  var spotlight = new THREE.SpotLight(0xffffff, intensity);
+  var spotlight = new _SpotLight2.default(5, 20, 0xffffff, intensity);
   spotlight.penumbra = 0.5;
   spotlight.angle = 0.3;
   spotlight.position.copy(position);
@@ -218,11 +311,11 @@ var createBench = function createBench() {
 
   addSpotlight(0.8, new THREE.Vector3(roomSize.x / -2, roomSize.y, 0));
   addSpotlight(0.8, new THREE.Vector3(roomSize.x / 2, roomSize.y, 0));
-  addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, 0));
-  addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, 0));
+  addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, -100));
+  addSpotlight(0.7, new THREE.Vector3(0, roomSize.y, 100));
 
   spotlights.forEach(function (spotlight, index) {
-    gui.add(spotlight, 'visible').name('Switch ' + index);
+    gui.add(spotlight, 'switch').name('Switch ' + index);
     gui.add(spotlight.helper, 'visible').name('Helper ' + index);
   });
 
@@ -248,7 +341,7 @@ var createBench = function createBench() {
     pickables.push(base);
     base.description = 'The Great Teapot';
 
-    spotlights[0].target = base;
+    spotlights[0].lookTarget(base);
   });
 
   var objectLoader = new THREE.ObjectLoader();
@@ -264,7 +357,7 @@ var createBench = function createBench() {
     pickables.push(base);
     base.description = 'The Great Train';
 
-    spotlights[1].target = base;
+    spotlights[1].lookTarget(base);
   });
 
   var paintingTube = 2;
@@ -278,7 +371,7 @@ var createBench = function createBench() {
     pickables.push(painting);
     painting.description = 'The Great Lena';
 
-    spotlights[2].target = painting;
+    spotlights[2].lookTarget(painting);
   });
 
   textureLoader.load(_resources2.default + '/images/danboard.png', function (texture) {
@@ -290,7 +383,7 @@ var createBench = function createBench() {
     pickables.push(painting);
     painting.description = 'The Great Danboard';
 
-    spotlights[3].target = painting;
+    spotlights[3].lookTarget(painting);
   });
 
   var getPickable = function getPickable(child) {
@@ -313,7 +406,7 @@ var createBench = function createBench() {
   document.getElementById('description').innerText = picked ? picked.description : '';
 });
 
-},{"../../templates/resources":4,"../../templates/three3D":6,"./Base":1,"./Painting":2}],4:[function(require,module,exports){
+},{"../../templates/resources":5,"../../templates/three3D":7,"./Base":1,"./Painting":2,"./SpotLight":3}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -321,7 +414,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = '../../resources';
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -351,7 +444,7 @@ function animate(camera, callback) {
   })();
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -389,4 +482,4 @@ function animate() {
   (0, _three.animate)(camera, callback);
 }
 
-},{"./three":5}]},{},[3]);
+},{"./three":6}]},{},[4]);
