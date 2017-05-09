@@ -977,8 +977,14 @@ function onWindowResize() {
 function init() {
   var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
 
+  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref$resize = _ref.resize,
+      resize = _ref$resize === undefined ? true : _ref$resize;
+
   (0, _three.init)(camera, function () {
-    window.addEventListener('resize', onWindowResize, false);
+    if (resize) {
+      window.addEventListener('resize', onWindowResize, false);
+    }
     callback();
   });
 }

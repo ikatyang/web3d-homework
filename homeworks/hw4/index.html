@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Web3D Homework 4</title>
+    <script src="../../resources/libraries/threejs/three.min.js"></script>
+    <script src="../../resources/libraries/threejs/OrbitControls.js"></script>
+    <script src="../../resources/libraries/jquery/jquery.min.js"></script>
+    <style>
+      .title {
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        color: yellow;
+      }
+    </style>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+    <style>
+      :root {
+        --right-width: 12em;
+      }
+      .left {
+        float: left;
+        width: calc(100% - var(--right-width));
+      }
+      .right {
+        float: right;
+        width: var(--right-width);
+        height: 100vh;
+        overflow: auto;
+      }
+      .right > div {
+        padding: 1em;
+        padding-bottom: 0;
+      }
+      .actions input {
+        display: block;
+        width: 100%;
+        margin: 1em 0;
+        font-size: 1em;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div class="title">W3D_HW4</div>
+    <div class="left"></div>
+    <form class="right">
+      <div class="geometry">geometry
+        <div>
+          <input type="radio" name="geometry" value="Box" checked> Box
+        </div>
+        <div>
+          <input type="radio" name="geometry" value="Sphere"> Sphere
+        </div>
+        <div>
+          <input type="radio" name="geometry" value="TorusKnot"> TorusKnot
+        </div>
+      </div>
+      <div class="color">color
+        <div>
+          <input type="radio" name="color" value="cyan" checked> cyan
+        </div>
+        <div>
+          <input type="radio" name="color" value="red"> red
+        </div>
+        <div>
+          <input type="radio" name="color" value="yellow"> yellow
+        </div>
+        <div>
+          <input type="radio" name="color" value="pink"> pink
+        </div>
+        <div>
+          <input type="radio" name="color" value="magenta"> magenta
+        </div>
+      </div>
+      <div class="size">size
+        <div>
+          <input type="range" name="size" mix="2" max="30" step="2" value="15">
+        </div>
+      </div>
+      <div class="rotation">rotation
+        <div>
+          <input type="range" name="rotation" mix="0" max="6.283185307179586" step="0.3141592653589793" value="0">
+        </div>
+      </div>
+      <div class="actions">actions
+        <div>
+          <input class="clear" type="button" value="clear">
+          <input class="save" type="button" value="save">
+          <input class="restore" type="button" value="restore">
+        </div>
+      </div>
+    </form>
+    <script src="bundle.js"></script>
+  </body>
+</html>
