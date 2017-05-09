@@ -1,0 +1,60 @@
+extends ../../templates/homework3D.pug
+
+append import
+  script(src=`${resources}/libraries/jquery/jquery.min.js`)
+
+append style
+  style.
+    :root {
+      --right-width: 12em;
+    }
+    .left {
+      float: left;
+      width: calc(100% - var(--right-width));
+    }
+    .right {
+      float: right;
+      width: var(--right-width);
+      height: 100vh;
+      overflow: auto;
+    }
+    .right > div {
+      padding: 1em;
+      padding-bottom: 0;
+    }
+    .actions input {
+      display: block;
+      width: 100%;
+      margin: 1em 0;
+      font-size: 1em;
+    }
+
+append body
+  .left
+  form.right
+    - const radios = {geometry: ['Box', 'Sphere', 'TorusKnot'], color: ['cyan', 'red', 'yellow', 'pink', 'magenta']};
+    - for (const radio in radios)
+      div(class=radio)
+        =radio
+        - const radioItems = radios[radio];
+        - for (let i = 0; i < radioItems.length; i++)
+          - const radioItem = radioItems[i];
+            div
+              - if (i === 0)
+                input(type='radio' name=radio value=radioItem checked)
+              - else
+                input(type='radio' name=radio value=radioItem)
+              =` ${radioItem}`
+    - const ranges = {size: [2, 30, 2, 15], rotation: [0, Math.PI * 2, Math.PI / 10, 0]};
+    - for (const range in ranges)
+      - const [min, max, step, default_value] = ranges[range];
+      div(class=range)
+        =range
+        div
+          input(type='range' name=range mix=min max=max step=step value=default_value)
+    div.actions
+      ='actions'
+      div
+        input.clear(type='button' value='clear')
+        input.save(type='button' value='save')
+        input.restore(type='button' value='restore')

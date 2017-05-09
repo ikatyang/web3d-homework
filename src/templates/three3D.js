@@ -12,9 +12,11 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-export function init(callback = () => {}) {
+export function init(callback = () => {}, { resize = true } = {}) {
   basicInit(camera, () => {
-    window.addEventListener('resize', onWindowResize, false);
+    if (resize) {
+      window.addEventListener('resize', onWindowResize, false);
+    }
     callback();
   });
 }
