@@ -40,7 +40,7 @@ app.get('/login', (request, response) => {
 
 app.use('/resources', express.static(`${__dirname}/../../../resources`));
 
-app.post('/save', (request, response) => {
+app.post('/save', (request) => {
   const data = request.body.data;
   const { username } = request.body;
   const filename = getFilename(username);
