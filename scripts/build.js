@@ -2,11 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const pug = require('pug');
 const execSync = require('child_process').execSync;
+const { options, locals } = require('./constants');
 
 const cwd = process.cwd();
 const bin = path.resolve(cwd, './node_modules/.bin');
-
-const options = { pretty: true };
 
 const inputDir = path.join(cwd, 'src');
 const outputDir = path.join(cwd, 'gh-pages');
@@ -20,12 +19,6 @@ const homeworkNames = (specDir && [specDir]) || fs.readdirSync(homeworksDir);
 
 const homeworkIds = homeworkNames.map(name => name.slice(2));
 const homeworkDirs = homeworkNames.map(name => path.join(homeworksDir, name));
-
-const locals = {
-  courseAbbr: 'W3D',
-  courseName: 'Web3D',
-  homeworkId: '',
-};
 
 const checkDir = (dirname) => {
   if (fs.existsSync(dirname)) {

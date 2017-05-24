@@ -1,0 +1,15 @@
+{
+  "name": "web3d-homework5",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "rm -rf ./lib/temp && mkdir ./lib/temp",
+    "start": "node ./lib/server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "pug": "^2.0.0-rc.1"
+  }
+}

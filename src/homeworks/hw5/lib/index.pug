@@ -1,0 +1,76 @@
+extends ../../../templates/homework.pug
+
+block script
+  script(src='client.js')
+  script(src='resources/libraries/jquery/jquery.min.js')
+
+append style
+  style.
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    .title {
+      color: black;
+    }
+    .login-container {
+      margin-top: 3em;
+      text-align: center;
+    }
+    #login-message {
+      text-align: center;
+    }
+    #page-logging .header,
+    #page-logging .content,
+    #page-logging .footer {
+      position: absolute;
+      width: 100%;
+    }
+    #page-logging .header {
+      top: 3em;
+      height: calc(20vh - 3em);
+      text-align: center;
+    }
+    #page-logging .content {
+      top: 20vh;
+      height: 60vh;
+    }
+    #page-logging .footer {
+      bottom: 0;
+      height: 20vh;
+      text-align: center;
+    }
+    table {
+      width: 330px;
+      margin: auto;
+      height: 100%;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      display: block;
+    }
+
+append body
+  #page-login.page
+    form.login-container(onsubmit='onSubmit(event)')
+      | Username
+      input(type='text' name='username')
+      input(type='submit' value='login')
+    p#login-message
+  #page-logging.page(style='display: none;')
+    .header
+      ='Start logging, '
+      span.username
+    .content
+      table
+        thead
+          tr
+            th
+              | Time
+            th
+              | Location
+            th
+        tbody
+    .footer
+      input(type='button' value='Save' onclick='save()')
+      input(type='button' value='Load' onclick='load()')
+      input(type='button' value='Clean' onclick='clean()')
