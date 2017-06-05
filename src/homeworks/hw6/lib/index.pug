@@ -1,0 +1,43 @@
+extends ../../../templates/homework3D.pug
+
+block import
+  script(src=`resources/libraries/jquery/jquery.min.js`)
+  script(src=`resources/libraries/threejs/three.min.js`)
+  script(src=`resources/libraries/threejs/OrbitControls.js`)
+
+append style
+  style.
+    :root {
+      --right-width: 12em;
+    }
+    .left {
+      float: left;
+      width: calc(100% - var(--right-width));
+    }
+    .right {
+      float: right;
+      width: calc(var(--right-width) - 2em);
+      height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 1em;
+    }
+    .title {
+      pointer-events: none;
+    }
+    #login {
+      width: 100%;
+    }
+
+append body
+  .left
+  .right
+    label='User Name'
+    select#login
+      option='-'
+      - for (let i = 0; i < avatars.length; i++)
+        - const avatar = avatars[i];
+        option(value=avatar)=`${avatar[0].toUpperCase()}${avatar.slice(1)}`
+
+block script
+  script(src='client.js')
