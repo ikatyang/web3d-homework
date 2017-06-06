@@ -25,7 +25,14 @@ append style
     .title {
       pointer-events: none;
     }
-    #login {
+    label:first-child {
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+    }
+    select, button, input {
       width: 100%;
     }
 
@@ -38,6 +45,31 @@ append body
       - for (let i = 0; i < avatars.length; i++)
         - const avatar = avatars[i];
         option(value=avatar)=`${avatar[0].toUpperCase()}${avatar.slice(1)}`
+    label='Records'
+    select#records
+      option='-'
+      - for (let i = 0; i < filenames.length; i++)
+        option=filenames[i]
+    label='Player'
+    input#progress(type='range' min='0' max='1' step='0.01' value='0')
+    button#play='Play'
+    button#pause='Pause'
+    button#stop='Stop'
+    label='Speed'
+    select#speed
+      option(value='-2.0x')='-2.0x'
+      option(value='-1.0x')='-1.0x'
+      option(value='-0.5x')='-0.5x'
+      option(value='+0.5x')='+0.5x'
+      option(value='+1.0x' selected)='+1.0x'
+      option(value='+2.0x')='+2.0x'
+    label='Actions'
+    button#save='Save'
+    button#clean='Clean'
+    label='View'
+    select#view
+      option(value='god')='God'
+      option(value='3rd')='3rd'
 
 block script
   script(src='client.js')

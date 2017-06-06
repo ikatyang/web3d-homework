@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "postinstall": "rm -rf ./lib/temp && mkdir ./lib/temp",
     "start": "node ./lib/server.js"
   },
   "dependencies": {
